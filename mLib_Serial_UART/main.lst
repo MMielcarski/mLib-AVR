@@ -1,0 +1,308 @@
+   1               		.file	"main.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.text
+   8               	.Ltext0:
+   9               		.cfi_sections	.debug_frame
+  10               	.global	USART_Init
+  12               	USART_Init:
+  13               	.LFB0:
+  14               		.file 1 "main.c"
+   1:main.c        **** // device: 	AtMega 328p
+   2:main.c        **** // author:  Maciej Mielcarski
+   3:main.c        **** // serial communication
+   4:main.c        **** 
+   5:main.c        **** #include <avr/io.h>
+   6:main.c        **** 
+   7:main.c        **** #define F_CPU 16000000UL
+   8:main.c        **** #define FOSC 16000000UL
+   9:main.c        **** #define BAUD 9600
+  10:main.c        **** #define MYUBRR FOSC/16/BAUD-1
+  11:main.c        **** 
+  12:main.c        **** #include <util/setbaud.h>
+  13:main.c        **** 
+  14:main.c        **** #define BUTTON_1_PIN 	PD2
+  15:main.c        **** #define BUTTON_1_PORT 	PORTD
+  16:main.c        **** #define BUTTON_1_DDR 	DDRD
+  17:main.c        **** #define BUTTON_1_PIN_r 	PIND
+  18:main.c        **** 
+  19:main.c        **** #define LED_1_PIN 	PB5
+  20:main.c        **** #define LED_1_PORT 	PORTB
+  21:main.c        **** #define LED_1_DDR 	DDRB
+  22:main.c        **** 
+  23:main.c        **** void USART_Init(unsigned int ubrr)
+  24:main.c        **** {
+  15               		.loc 1 24 0
+  16               		.cfi_startproc
+  17               	.LVL0:
+  18               	/* prologue: function */
+  19               	/* frame size = 0 */
+  20               	/* stack size = 0 */
+  21               	.L__stack_usage = 0
+  25:main.c        ****    UBRR0H = (unsigned char)(ubrr>>8);	// set baud rate to 9600
+  22               		.loc 1 25 0
+  23 0000 9093 C500 		sts 197,r25
+  26:main.c        ****    UBRR0L = (unsigned char)ubrr;		//
+  24               		.loc 1 26 0
+  25 0004 8093 C400 		sts 196,r24
+  27:main.c        ****    UCSR0B = (1<<RXEN0)|(1<<TXEN0);		// Enable receiver and transmitter 
+  26               		.loc 1 27 0
+  27 0008 88E1      		ldi r24,lo8(24)
+  28               	.LVL1:
+  29 000a 8093 C100 		sts 193,r24
+  28:main.c        ****    UCSR0C = (1<<USBS0)|(3<<UCSZ00);		// Set frame format: 8data, 2stop bit
+  30               		.loc 1 28 0
+  31 000e 8EE0      		ldi r24,lo8(14)
+  32 0010 8093 C200 		sts 194,r24
+  33 0014 0895      		ret
+  34               		.cfi_endproc
+  35               	.LFE0:
+  37               	.global	uart_putchar
+  39               	uart_putchar:
+  40               	.LFB1:
+  29:main.c        **** }
+  30:main.c        **** 
+  31:main.c        **** void uart_putchar(char c) 
+  32:main.c        **** {
+  41               		.loc 1 32 0
+  42               		.cfi_startproc
+  43               	/* prologue: function */
+  44               	/* frame size = 0 */
+  45               	/* stack size = 0 */
+  46               	.L__stack_usage = 0
+  47               	.LVL2:
+  48               	.L3:
+  33:main.c        **** 	while ( !(UCSR0A & (1<<UDRE0)) )	// Wait for empty transmit buffer 
+  49               		.loc 1 33 0 discriminator 1
+  50 0016 9091 C000 		lds r25,192
+  51 001a 95FF      		sbrs r25,5
+  52 001c 00C0      		rjmp .L3
+  34:main.c        **** 	;
+  35:main.c        ****     UDR0 = c;							// Put data into buffer, sends the data 
+  53               		.loc 1 35 0
+  54 001e 8093 C600 		sts 198,r24
+  55 0022 0895      		ret
+  56               		.cfi_endproc
+  57               	.LFE1:
+  59               	.global	uart_getchar
+  61               	uart_getchar:
+  62               	.LFB2:
+  36:main.c        **** }
+  37:main.c        **** 
+  38:main.c        **** char uart_getchar(void) {
+  63               		.loc 1 38 0
+  64               		.cfi_startproc
+  65               	/* prologue: function */
+  66               	/* frame size = 0 */
+  67               	/* stack size = 0 */
+  68               	.L__stack_usage = 0
+  69               	.L8:
+  39:main.c        ****     loop_until_bit_is_set(UCSR0A, RXC0); 	// Wait until data exists
+  70               		.loc 1 39 0 discriminator 1
+  71 0024 8091 C000 		lds r24,192
+  72 0028 87FF      		sbrs r24,7
+  73 002a 00C0      		rjmp .L8
+  40:main.c        ****     return UDR0;
+  74               		.loc 1 40 0
+  75 002c 8091 C600 		lds r24,198
+  41:main.c        **** }
+  76               		.loc 1 41 0
+  77 0030 0895      		ret
+  78               		.cfi_endproc
+  79               	.LFE2:
+  81               	.global	Button_1_State
+  83               	Button_1_State:
+  84               	.LFB3:
+  42:main.c        **** 
+  43:main.c        **** int Button_1_State()
+  44:main.c        **** {
+  85               		.loc 1 44 0
+  86               		.cfi_startproc
+  87               	/* prologue: function */
+  88               	/* frame size = 0 */
+  89               	/* stack size = 0 */
+  90               	.L__stack_usage = 0
+  45:main.c        **** 	if(!(BUTTON_1_PIN_r & (1<<BUTTON_1_PIN)))	return 1;
+  91               		.loc 1 45 0
+  92 0032 89B1      		in r24,0x9
+  93 0034 8695      		lsr r24
+  94 0036 8695      		lsr r24
+  95 0038 91E0      		ldi r25,lo8(1)
+  96 003a 8927      		eor r24,r25
+  46:main.c        **** 	else 										return 0;
+  47:main.c        **** }
+  97               		.loc 1 47 0
+  98 003c 8170      		andi r24,1
+  99 003e 90E0      		ldi r25,0
+ 100 0040 0895      		ret
+ 101               		.cfi_endproc
+ 102               	.LFE3:
+ 104               	.global	uart_putstring
+ 106               	uart_putstring:
+ 107               	.LFB4:
+  48:main.c        **** 
+  49:main.c        **** void uart_putstring(char tab[])
+  50:main.c        **** {
+ 108               		.loc 1 50 0
+ 109               		.cfi_startproc
+ 110               	.LVL3:
+ 111 0042 CF93      		push r28
+ 112               	.LCFI0:
+ 113               		.cfi_def_cfa_offset 3
+ 114               		.cfi_offset 28, -2
+ 115 0044 DF93      		push r29
+ 116               	.LCFI1:
+ 117               		.cfi_def_cfa_offset 4
+ 118               		.cfi_offset 29, -3
+ 119               	/* prologue: function */
+ 120               	/* frame size = 0 */
+ 121               	/* stack size = 2 */
+ 122               	.L__stack_usage = 2
+ 123               	.L12:
+  51:main.c        **** 	int i =0;
+  52:main.c        **** 	while (( UCSR0A & (1<<UDRE0))  == 0){};
+ 124               		.loc 1 52 0 discriminator 1
+ 125 0046 2091 C000 		lds r18,192
+ 126 004a 25FF      		sbrs r18,5
+ 127 004c 00C0      		rjmp .L12
+ 128 004e EC01      		movw r28,r24
+ 129               	.LVL4:
+ 130               	.L13:
+  53:main.c        ****         while (tab[i] != 0x00)
+ 131               		.loc 1 53 0
+ 132 0050 8991      		ld r24,Y+
+ 133 0052 8823      		tst r24
+ 134 0054 01F0      		breq .L17
+  54:main.c        **** 		{ 
+  55:main.c        ****             uart_putchar(tab[i]);
+ 135               		.loc 1 55 0
+ 136 0056 0E94 0000 		call uart_putchar
+ 137               	.LVL5:
+ 138 005a 00C0      		rjmp .L13
+ 139               	.L17:
+  56:main.c        **** 			i++; 
+  57:main.c        ****         }
+  58:main.c        **** 		uart_putchar('\n');
+ 140               		.loc 1 58 0
+ 141 005c 8AE0      		ldi r24,lo8(10)
+ 142               	/* epilogue start */
+  59:main.c        **** }
+ 143               		.loc 1 59 0
+ 144 005e DF91      		pop r29
+ 145 0060 CF91      		pop r28
+  58:main.c        **** }
+ 146               		.loc 1 58 0
+ 147 0062 0C94 0000 		jmp uart_putchar
+ 148               	.LVL6:
+ 149               		.cfi_endproc
+ 150               	.LFE4:
+ 152               	.global	int_to_string
+ 154               	int_to_string:
+ 155               	.LFB5:
+  60:main.c        **** 
+  61:main.c        **** void int_to_string(int value, char tab[])
+  62:main.c        **** {
+ 156               		.loc 1 62 0
+ 157               		.cfi_startproc
+ 158               	.LVL7:
+ 159               	/* prologue: function */
+ 160               	/* frame size = 0 */
+ 161               	/* stack size = 0 */
+ 162               	.L__stack_usage = 0
+  63:main.c        **** 	itoa(value,tab,10);
+ 163               		.loc 1 63 0
+ 164 0066 4AE0      		ldi r20,lo8(10)
+ 165 0068 50E0      		ldi r21,0
+ 166 006a 0C94 0000 		jmp itoa
+ 167               	.LVL8:
+ 168               		.cfi_endproc
+ 169               	.LFE5:
+ 171               		.section	.text.startup,"ax",@progbits
+ 172               	.global	main
+ 174               	main:
+ 175               	.LFB6:
+  64:main.c        **** }
+  65:main.c        **** 
+  66:main.c        **** int main(void)
+  67:main.c        **** {
+ 176               		.loc 1 67 0
+ 177               		.cfi_startproc
+ 178 0000 CF93      		push r28
+ 179               	.LCFI2:
+ 180               		.cfi_def_cfa_offset 3
+ 181               		.cfi_offset 28, -2
+ 182 0002 DF93      		push r29
+ 183               	.LCFI3:
+ 184               		.cfi_def_cfa_offset 4
+ 185               		.cfi_offset 29, -3
+ 186 0004 CDB7      		in r28,__SP_L__
+ 187 0006 DEB7      		in r29,__SP_H__
+ 188               	.LCFI4:
+ 189               		.cfi_def_cfa_register 28
+ 190 0008 6097      		sbiw r28,16
+ 191               	.LCFI5:
+ 192               		.cfi_def_cfa_offset 20
+ 193 000a 0FB6      		in __tmp_reg__,__SREG__
+ 194 000c F894      		cli
+ 195 000e DEBF      		out __SP_H__,r29
+ 196 0010 0FBE      		out __SREG__,__tmp_reg__
+ 197 0012 CDBF      		out __SP_L__,r28
+ 198               	/* prologue: function */
+ 199               	/* frame size = 16 */
+ 200               	/* stack size = 18 */
+ 201               	.L__stack_usage = 18
+  68:main.c        **** 	USART_Init(MYUBRR);
+ 202               		.loc 1 68 0
+ 203 0014 87E6      		ldi r24,lo8(103)
+ 204 0016 90E0      		ldi r25,0
+ 205 0018 0E94 0000 		call USART_Init
+ 206               	.LVL9:
+  69:main.c        ****     char input;
+  70:main.c        **** 	char tab[16];
+  71:main.c        **** 	int zm = 1666;
+  72:main.c        **** 
+  73:main.c        **** 	int_to_string(zm,tab);
+ 207               		.loc 1 73 0
+ 208 001c BE01      		movw r22,r28
+ 209 001e 6F5F      		subi r22,-1
+ 210 0020 7F4F      		sbci r23,-1
+ 211 0022 82E8      		ldi r24,lo8(-126)
+ 212 0024 96E0      		ldi r25,lo8(6)
+ 213 0026 0E94 0000 		call int_to_string
+ 214               	.LVL10:
+ 215               	.L20:
+  74:main.c        **** 
+  75:main.c        **** 	while(1)
+  76:main.c        **** 	{
+  77:main.c        **** 		uart_putstring(tab);
+ 216               		.loc 1 77 0 discriminator 1
+ 217 002a CE01      		movw r24,r28
+ 218 002c 0196      		adiw r24,1
+ 219 002e 0E94 0000 		call uart_putstring
+ 220               	.LVL11:
+ 221 0032 00C0      		rjmp .L20
+ 222               		.cfi_endproc
+ 223               	.LFE6:
+ 225               		.text
+ 226               	.Letext0:
+ 227               		.file 2 "/usr/lib/avr/include/stdint.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 main.c
+     /tmp/cc7HFgp2.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/cc7HFgp2.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/cc7HFgp2.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/cc7HFgp2.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/cc7HFgp2.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/cc7HFgp2.s:12     .text:0000000000000000 USART_Init
+     /tmp/cc7HFgp2.s:39     .text:0000000000000016 uart_putchar
+     /tmp/cc7HFgp2.s:61     .text:0000000000000024 uart_getchar
+     /tmp/cc7HFgp2.s:83     .text:0000000000000032 Button_1_State
+     /tmp/cc7HFgp2.s:106    .text:0000000000000042 uart_putstring
+     /tmp/cc7HFgp2.s:154    .text:0000000000000066 int_to_string
+     /tmp/cc7HFgp2.s:174    .text.startup:0000000000000000 main
+
+UNDEFINED SYMBOLS
+itoa

@@ -1,0 +1,189 @@
+   1               		.file	"main.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.text
+   8               	.Ltext0:
+   9               		.cfi_sections	.debug_frame
+  10               		.section	.text.startup,"ax",@progbits
+  11               	.global	main
+  13               	main:
+  14               	.LFB6:
+  15               		.file 1 "main.c"
+   1:main.c        **** // device: 	AtMega 328p
+   2:main.c        **** // author:  Maciej Mielcarski
+   3:main.c        **** // PWM generation
+   4:main.c        **** 
+   5:main.c        **** #include <avr/io.h>
+   6:main.c        **** #include <util/delay.h>
+   7:main.c        **** #include <avr/interrupt.h>
+   8:main.c        **** 
+   9:main.c        **** #define F_CPU 8000000UL
+  10:main.c        **** 
+  11:main.c        **** #define PWM1_PSC 1024		// PWM 1 prescaler value
+  12:main.c        **** #define PWM1_FREQ 50		// PWM 1 desired frequency
+  13:main.c        **** #define PWM1_TOP 
+  14:main.c        **** 
+  15:main.c        **** #define PWM_1_PIN 	PB1
+  16:main.c        **** #define PWM_1_PORT 	PORTB
+  17:main.c        **** #define PWM_1_DDR 	DDRB
+  18:main.c        **** #define PWM_1_PIN_r PINB 
+  19:main.c        **** 
+  20:main.c        **** #define TIM1_PSC 1024		// TIMER 1 prescaler value
+  21:main.c        **** #define TIM1_FREQ 1			// TIMER 1 desired frequency in seconds
+  22:main.c        **** 
+  23:main.c        **** int main(void)
+  24:main.c        **** {
+  16               		.loc 1 24 0
+  17               		.cfi_startproc
+  18               	/* prologue: function */
+  19               	/* frame size = 0 */
+  20               	/* stack size = 0 */
+  21               	.L__stack_usage = 0
+  25:main.c        **** 	PWM_1_DDR |= (1<<PWM_1_PIN);					// PWM 1 pin set as output
+  22               		.loc 1 25 0
+  23 0000 219A      		sbi 0x4,1
+  26:main.c        **** 	ICR1 = 0xFFFF;									// set TOP to 16bit
+  24               		.loc 1 26 0
+  25 0002 8FEF      		ldi r24,lo8(-1)
+  26 0004 9FEF      		ldi r25,lo8(-1)
+  27 0006 9093 8700 		sts 134+1,r25
+  28 000a 8093 8600 		sts 134,r24
+  27:main.c        **** 	TCCR1A |= (1 << COM1A1) | (1 << COM1B1);		// none-inverting mode
+  29               		.loc 1 27 0
+  30 000e 8091 8000 		lds r24,128
+  31 0012 806A      		ori r24,lo8(-96)
+  32 0014 8093 8000 		sts 128,r24
+  28:main.c        **** 	TCCR1A |= (1<<WGM11);							// set Fast PWM mode using ICR1 as TOP
+  33               		.loc 1 28 0
+  34 0018 8091 8000 		lds r24,128
+  35 001c 8260      		ori r24,lo8(2)
+  36 001e 8093 8000 		sts 128,r24
+  29:main.c        **** 
+  30:main.c        ****     OCR0A = ((F_CPU / TIM1_PSC) * TIM1_FREQ) - 1;	// (dec 15624) counter size
+  37               		.loc 1 30 0
+  38 0022 83E8      		ldi r24,lo8(-125)
+  39 0024 87BD      		out 0x27,r24
+  31:main.c        ****     TCCR1B |= (1 << WGM12);							// Mode 4, CTC on OCR1A
+  40               		.loc 1 31 0
+  41 0026 8091 8100 		lds r24,129
+  42 002a 8860      		ori r24,lo8(8)
+  43 002c 8093 8100 		sts 129,r24
+  32:main.c        ****     TIMSK1 |= (1 << OCIE1A);						// Set interrupt on compare match	
+  44               		.loc 1 32 0
+  45 0030 8091 6F00 		lds r24,111
+  46 0034 8260      		ori r24,lo8(2)
+  47 0036 8093 6F00 		sts 111,r24
+  33:main.c        ****     TCCR1B |= (1 << CS12) | (1 << CS10);			// set prescaler to 1024 and start the timer
+  48               		.loc 1 33 0
+  49 003a 8091 8100 		lds r24,129
+  50 003e 8560      		ori r24,lo8(5)
+  51 0040 8093 8100 		sts 129,r24
+  34:main.c        ****     sei();											// enable interrupts
+  52               		.loc 1 34 0
+  53               	/* #APP */
+  54               	 ;  34 "main.c" 1
+  55 0044 7894      		sei
+  56               	 ;  0 "" 2
+  35:main.c        **** 
+  36:main.c        **** 	OCR1A = 0;
+  57               		.loc 1 36 0
+  58               	/* #NOAPP */
+  59 0046 1092 8900 		sts 136+1,__zero_reg__
+  60 004a 1092 8800 		sts 136,__zero_reg__
+  61               	.L2:
+  37:main.c        **** 
+  38:main.c        **** 	//DDRB |= (1<<PB5);
+  39:main.c        **** 	//PORTB &= ~(1<<PB5);
+  40:main.c        **** 
+  41:main.c        **** 	while(1)
+  42:main.c        **** 	{
+  43:main.c        **** 		// Toggle_LED();
+  44:main.c        **** 		// delay_ms(1000);
+  45:main.c        **** 	}
+  62               		.loc 1 45 0 discriminator 1
+  63 004e 00C0      		rjmp .L2
+  64               		.cfi_endproc
+  65               	.LFE6:
+  67               		.text
+  68               	.global	__vector_11
+  70               	__vector_11:
+  71               	.LFB7:
+  46:main.c        **** }
+  47:main.c        **** 
+  48:main.c        **** ISR(TIMER1_COMPA_vect)	// timer1 overflow interrupt
+  49:main.c        **** {
+  72               		.loc 1 49 0
+  73               		.cfi_startproc
+  74 0000 1F92      		push r1
+  75               	.LCFI0:
+  76               		.cfi_def_cfa_offset 3
+  77               		.cfi_offset 1, -2
+  78 0002 0F92      		push r0
+  79               	.LCFI1:
+  80               		.cfi_def_cfa_offset 4
+  81               		.cfi_offset 0, -3
+  82 0004 0FB6      		in r0,__SREG__
+  83 0006 0F92      		push r0
+  84 0008 1124      		clr __zero_reg__
+  85 000a 8F93      		push r24
+  86               	.LCFI2:
+  87               		.cfi_def_cfa_offset 5
+  88               		.cfi_offset 24, -4
+  89 000c 9F93      		push r25
+  90               	.LCFI3:
+  91               		.cfi_def_cfa_offset 6
+  92               		.cfi_offset 25, -5
+  93 000e EF93      		push r30
+  94               	.LCFI4:
+  95               		.cfi_def_cfa_offset 7
+  96               		.cfi_offset 30, -6
+  97 0010 FF93      		push r31
+  98               	.LCFI5:
+  99               		.cfi_def_cfa_offset 8
+ 100               		.cfi_offset 31, -7
+ 101               	/* prologue: Signal */
+ 102               	/* frame size = 0 */
+ 103               	/* stack size = 7 */
+ 104               	.L__stack_usage = 7
+  50:main.c        **** 	//Toggle_LED();
+  51:main.c        **** 	OCR1A += 100;	
+ 105               		.loc 1 51 0
+ 106 0012 E8E8      		ldi r30,lo8(-120)
+ 107 0014 F0E0      		ldi r31,0
+ 108 0016 8081      		ld r24,Z
+ 109 0018 9181      		ldd r25,Z+1
+ 110 001a 8C59      		subi r24,-100
+ 111 001c 9F4F      		sbci r25,-1
+ 112 001e 9183      		std Z+1,r25
+ 113 0020 8083      		st Z,r24
+ 114               	/* epilogue start */
+  52:main.c        **** 
+  53:main.c        **** }
+ 115               		.loc 1 53 0
+ 116 0022 FF91      		pop r31
+ 117 0024 EF91      		pop r30
+ 118 0026 9F91      		pop r25
+ 119 0028 8F91      		pop r24
+ 120 002a 0F90      		pop r0
+ 121 002c 0FBE      		out __SREG__,r0
+ 122 002e 0F90      		pop r0
+ 123 0030 1F90      		pop r1
+ 124 0032 1895      		reti
+ 125               		.cfi_endproc
+ 126               	.LFE7:
+ 128               	.Letext0:
+ 129               		.file 2 "/usr/lib/avr/include/stdint.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 main.c
+     /tmp/ccGm4hED.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccGm4hED.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccGm4hED.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccGm4hED.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccGm4hED.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccGm4hED.s:13     .text.startup:0000000000000000 main
+     /tmp/ccGm4hED.s:70     .text:0000000000000000 __vector_11
+
+NO UNDEFINED SYMBOLS

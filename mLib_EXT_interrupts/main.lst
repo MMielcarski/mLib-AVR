@@ -1,0 +1,235 @@
+   1               		.file	"main.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.text
+   8               	.Ltext0:
+   9               		.cfi_sections	.debug_frame
+  10               	.global	Button_1_State
+  12               	Button_1_State:
+  13               	.LFB0:
+  14               		.file 1 "main.c"
+   1:main.c        **** // device: 	AtMega 328p
+   2:main.c        **** // author:  Maciej Mielcarski
+   3:main.c        **** // external interrupts handle
+   4:main.c        **** 
+   5:main.c        **** #include <avr/io.h>
+   6:main.c        **** #include <avr/interrupt.h>
+   7:main.c        **** 
+   8:main.c        **** #define F_CPU 8000000UL
+   9:main.c        **** 
+  10:main.c        **** #define BUTTON_1_PIN 	PD2
+  11:main.c        **** #define BUTTON_1_PORT 	PORTD
+  12:main.c        **** #define BUTTON_1_DDR 	DDRD
+  13:main.c        **** #define BUTTON_1_PIN_r 	PIND
+  14:main.c        **** 
+  15:main.c        **** #define LED_1_PIN 	PB5
+  16:main.c        **** #define LED_1_PORT 	PORTB
+  17:main.c        **** #define LED_1_DDR 	DDRB
+  18:main.c        **** 
+  19:main.c        **** int Button_1_State()
+  20:main.c        **** {
+  15               		.loc 1 20 0
+  16               		.cfi_startproc
+  17               	/* prologue: function */
+  18               	/* frame size = 0 */
+  19               	/* stack size = 0 */
+  20               	.L__stack_usage = 0
+  21:main.c        **** 	if(!(BUTTON_1_PIN_r & (1<<BUTTON_1_PIN)))	return 1;
+  21               		.loc 1 21 0
+  22 0000 89B1      		in r24,0x9
+  23 0002 8695      		lsr r24
+  24 0004 8695      		lsr r24
+  25 0006 91E0      		ldi r25,lo8(1)
+  26 0008 8927      		eor r24,r25
+  22:main.c        **** 	else 										return 0;
+  23:main.c        **** }
+  27               		.loc 1 23 0
+  28 000a 8170      		andi r24,1
+  29 000c 90E0      		ldi r25,0
+  30 000e 0895      		ret
+  31               		.cfi_endproc
+  32               	.LFE0:
+  34               		.section	.text.startup,"ax",@progbits
+  35               	.global	main
+  37               	main:
+  38               	.LFB1:
+  24:main.c        **** 
+  25:main.c        **** int main(void)
+  26:main.c        **** {
+  39               		.loc 1 26 0
+  40               		.cfi_startproc
+  41               	/* prologue: function */
+  42               	/* frame size = 0 */
+  43               	/* stack size = 0 */
+  44               	.L__stack_usage = 0
+  27:main.c        **** 	DDRD &= ~(1<<DDD2);	// Clear the PD2 pin - PCINT0 is now input
+  45               		.loc 1 27 0
+  46 0000 5298      		cbi 0xa,2
+  28:main.c        **** 	PORTD |= (1<<PORTD2);	// turn on the pulllup
+  47               		.loc 1 28 0
+  48 0002 5A9A      		sbi 0xb,2
+  29:main.c        **** 	EICRA |= (1<<ISC00);	// set INT0 to trigger on ANY logic change
+  49               		.loc 1 29 0
+  50 0004 8091 6900 		lds r24,105
+  51 0008 8160      		ori r24,lo8(1)
+  52 000a 8093 6900 		sts 105,r24
+  30:main.c        **** 	EIMSK |= (1<<INT0); 	// turns on INT0
+  53               		.loc 1 30 0
+  54 000e E89A      		sbi 0x1d,0
+  31:main.c        **** 	sei();		// turn on interrupts
+  55               		.loc 1 31 0
+  56               	/* #APP */
+  57               	 ;  31 "main.c" 1
+  58 0010 7894      		sei
+  59               	 ;  0 "" 2
+  32:main.c        **** 
+  33:main.c        **** 	BUTTON_1_DDR |= (0<<BUTTON_1_PIN);		// button pin set as input
+  60               		.loc 1 33 0
+  61               	/* #NOAPP */
+  62 0012 8AB1      		in r24,0xa
+  63 0014 8AB9      		out 0xa,r24
+  34:main.c        **** 	BUTTON_1_PORT |= (1<<BUTTON_1_PIN); 	// button input with internal pull-up
+  64               		.loc 1 34 0
+  65 0016 5A9A      		sbi 0xb,2
+  35:main.c        **** 
+  36:main.c        **** 	LED_1_DDR |= (1<<LED_1_PIN);		// led pin set as output
+  66               		.loc 1 36 0
+  67 0018 259A      		sbi 0x4,5
+  68               	.L3:
+  37:main.c        **** 	//LED_1_PORT | = (1<<LED_1_PIN);
+  38:main.c        **** 
+  39:main.c        **** 	while(1)
+  40:main.c        **** 	{
+  41:main.c        **** 		//if(Button_1_State())	LED_1_PORT |=  (1<<LED_1_PIN);
+  42:main.c        **** 		//else 					LED_1_PORT &= ~(1<<LED_1_PIN);
+  43:main.c        **** 	}
+  69               		.loc 1 43 0 discriminator 1
+  70 001a 00C0      		rjmp .L3
+  71               		.cfi_endproc
+  72               	.LFE1:
+  74               		.text
+  75               	.global	__vector_1
+  77               	__vector_1:
+  78               	.LFB2:
+  44:main.c        **** }
+  45:main.c        **** 
+  46:main.c        **** ISR (INT0_vect)
+  47:main.c        **** {
+  79               		.loc 1 47 0
+  80               		.cfi_startproc
+  81 0010 1F92      		push r1
+  82               	.LCFI0:
+  83               		.cfi_def_cfa_offset 3
+  84               		.cfi_offset 1, -2
+  85 0012 0F92      		push r0
+  86               	.LCFI1:
+  87               		.cfi_def_cfa_offset 4
+  88               		.cfi_offset 0, -3
+  89 0014 0FB6      		in r0,__SREG__
+  90 0016 0F92      		push r0
+  91 0018 1124      		clr __zero_reg__
+  92 001a 2F93      		push r18
+  93               	.LCFI2:
+  94               		.cfi_def_cfa_offset 5
+  95               		.cfi_offset 18, -4
+  96 001c 3F93      		push r19
+  97               	.LCFI3:
+  98               		.cfi_def_cfa_offset 6
+  99               		.cfi_offset 19, -5
+ 100 001e 4F93      		push r20
+ 101               	.LCFI4:
+ 102               		.cfi_def_cfa_offset 7
+ 103               		.cfi_offset 20, -6
+ 104 0020 5F93      		push r21
+ 105               	.LCFI5:
+ 106               		.cfi_def_cfa_offset 8
+ 107               		.cfi_offset 21, -7
+ 108 0022 6F93      		push r22
+ 109               	.LCFI6:
+ 110               		.cfi_def_cfa_offset 9
+ 111               		.cfi_offset 22, -8
+ 112 0024 7F93      		push r23
+ 113               	.LCFI7:
+ 114               		.cfi_def_cfa_offset 10
+ 115               		.cfi_offset 23, -9
+ 116 0026 8F93      		push r24
+ 117               	.LCFI8:
+ 118               		.cfi_def_cfa_offset 11
+ 119               		.cfi_offset 24, -10
+ 120 0028 9F93      		push r25
+ 121               	.LCFI9:
+ 122               		.cfi_def_cfa_offset 12
+ 123               		.cfi_offset 25, -11
+ 124 002a AF93      		push r26
+ 125               	.LCFI10:
+ 126               		.cfi_def_cfa_offset 13
+ 127               		.cfi_offset 26, -12
+ 128 002c BF93      		push r27
+ 129               	.LCFI11:
+ 130               		.cfi_def_cfa_offset 14
+ 131               		.cfi_offset 27, -13
+ 132 002e EF93      		push r30
+ 133               	.LCFI12:
+ 134               		.cfi_def_cfa_offset 15
+ 135               		.cfi_offset 30, -14
+ 136 0030 FF93      		push r31
+ 137               	.LCFI13:
+ 138               		.cfi_def_cfa_offset 16
+ 139               		.cfi_offset 31, -15
+ 140               	/* prologue: Signal */
+ 141               	/* frame size = 0 */
+ 142               	/* stack size = 15 */
+ 143               	.L__stack_usage = 15
+  48:main.c        **** 	if(Button_1_State())	LED_1_PORT |=  (1<<LED_1_PIN);
+ 144               		.loc 1 48 0
+ 145 0032 0E94 0000 		call Button_1_State
+ 146               	.LVL0:
+ 147 0036 892B      		or r24,r25
+ 148 0038 01F0      		breq .L6
+ 149               		.loc 1 48 0 is_stmt 0 discriminator 1
+ 150 003a 2D9A      		sbi 0x5,5
+ 151 003c 00C0      		rjmp .L5
+ 152               	.L6:
+  49:main.c        **** 	else 					LED_1_PORT &= ~(1<<LED_1_PIN);
+ 153               		.loc 1 49 0 is_stmt 1
+ 154 003e 2D98      		cbi 0x5,5
+ 155               	.L5:
+ 156               	/* epilogue start */
+  50:main.c        **** }
+ 157               		.loc 1 50 0
+ 158 0040 FF91      		pop r31
+ 159 0042 EF91      		pop r30
+ 160 0044 BF91      		pop r27
+ 161 0046 AF91      		pop r26
+ 162 0048 9F91      		pop r25
+ 163 004a 8F91      		pop r24
+ 164 004c 7F91      		pop r23
+ 165 004e 6F91      		pop r22
+ 166 0050 5F91      		pop r21
+ 167 0052 4F91      		pop r20
+ 168 0054 3F91      		pop r19
+ 169 0056 2F91      		pop r18
+ 170 0058 0F90      		pop r0
+ 171 005a 0FBE      		out __SREG__,r0
+ 172 005c 0F90      		pop r0
+ 173 005e 1F90      		pop r1
+ 174 0060 1895      		reti
+ 175               		.cfi_endproc
+ 176               	.LFE2:
+ 178               	.Letext0:
+ 179               		.file 2 "/usr/lib/avr/include/stdint.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 main.c
+     /tmp/ccYPFkEe.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccYPFkEe.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccYPFkEe.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccYPFkEe.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccYPFkEe.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccYPFkEe.s:12     .text:0000000000000000 Button_1_State
+     /tmp/ccYPFkEe.s:37     .text.startup:0000000000000000 main
+     /tmp/ccYPFkEe.s:77     .text:0000000000000010 __vector_1
+
+NO UNDEFINED SYMBOLS
