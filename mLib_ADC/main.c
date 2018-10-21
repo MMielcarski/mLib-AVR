@@ -1,21 +1,37 @@
 // device: 	AtMega 328p
 // author:  Maciej Mielcarski
-// adc
+// ADC single and free running conversion single and multi-channel handled by timer
+// TODO: voltage measurement
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
 #define F_CPU 16000000UL
 #define TIM1_PSC 1024		// TIMER 1 prescaler value
-#define TIM1_FREQ 1			// TIMER 1 desired frequency in seconds
+#define TIM1_PER 100		// TIMER 1 desired period in miliseconds
 #define FOSC 16000000UL
-#define BAUD 9600
-#define MYUBRR FOSC/16/BAUD-1
+#define BAUD 9600				// UART
+#define MYUBRR FOSC/16/BAUD-1	// UART
 
-#define SUPPLY_VOLT 5000	// [mV]
-#define ADC_RES 1024
+//#define SUPPLY_VOLT 5000	// [mV]
+//#define ADC_RES 1024
 
 #include <util/setbaud.h>
+
+	int _ADC_read_1 = 0;
+	int _ADC_read_2 = 0;
+	int _ADC_read_3 = 0;
+
+// ------------------------- TIMER ----------------------------------------
+
+void TIM1_Init()	// enable interrupts
+{
+    OCR1A = (((F_CPU/1000) / TIM1_PSC) * TIM1_PER) - 1;	// counter size
+    TCCR1B |= (1 << WGM12);							// Mode 4, CTC on OCR1A
+    TIMSK1 |= (1 << OCIE1A);						// Set interrupt on compare match	
+    TCCR1B |= (1 << CS12) | (1 << CS10);			// set prescaler to 1024 and start the timer
+    sei();	
+}
 
 // ------------------------- UART ----------------------------------------
 
@@ -58,16 +74,7 @@ void uart_putint(int value)
 	uart_putstring(tab);
 }
 
-// ------------------------- END OF UART ----------------------------------------
-
-void TIM1_Init()	// enable interrupts
-{
-    OCR1A = ((F_CPU / TIM1_PSC) * TIM1_FREQ) - 1;	// (dec 15624) counter size
-    TCCR1B |= (1 << WGM12);							// Mode 4, CTC on OCR1A
-    TIMSK1 |= (1 << OCIE1A);						// Set interrupt on compare match	
-    TCCR1B |= (1 << CS12) | (1 << CS10);			// set prescaler to 1024 and start the timer
-    sei();	
-}
+// ------------------------- ADC ----------------------------------------
 
 void ADC_Init()
 {
@@ -75,16 +82,21 @@ void ADC_Init()
 	ADMUX |= (1 << REFS0); 	// Set ADC reference to AVCC
 	
 	ADCSRA |= (1 << ADEN);  // Enable ADC
-	ADCSRA |= (1 << ADSC);  // Start A2D Conversions
-	ADCSRA |= (1 << ADATE);	// for free running mode
+	//ADCSRA |= (1 << ADSC);  // Start A2D Conversions
+	//ADCSRA |= (1 << ADATE);	// for free running mode
 }
 
-/*uint16_t ADC_read()			// wykorzystanie pojedynczego pomiaru
+uint16_t ADC_read(uint8_t channel)		
 {
-	ADCSRA |= (1 << ADSC);		// start ADC conversion
-	while(ADCSRA & (1 << ADSC));
+	channel &= 0x07;					// AND operation with 7 (will keep channel between 0-7) 
+	ADMUX = (ADMUX & 0xF8) | channel;	// clears 3 first bits before OR
+
+	ADCSRA |= (1 << ADSC);				// start single convesrion
+	while(ADCSRA & (1 << ADSC));		// wait for conversion to complete
 	return ADCW;
-}*/
+}
+
+// ------------------------- MAIN ----------------------------------------
 
 int main(void)
 {
@@ -92,20 +104,24 @@ int main(void)
 	TIM1_Init();
 	ADC_Init();
 
-	int ADC_read = 0;
-	double ADC_voltage = 0;
+	//double ADC_voltage = 0;
 
 	while(1)
 	{
 		//ADC_voltage = ADC_read*SUPPLY_VOLT/ADC_RES;	// problem z wysylaniem float po UART
-		ADC_read = ADCW;
-		//read = ADC_read();	// nie dziala
-		uart_putint(ADC_read);
 	}
 }
 
+// -----------------------------------------------------------------
+
 ISR(TIMER1_COMPA_vect)	// timer1 overflow interrupt
 {
+	_ADC_read_1 = ADC_read(0);
+	_ADC_read_2 = ADC_read(1);
+	_ADC_read_3 = ADC_read(2);
 
+	//uart_putint(_ADC_read_1);
+	uart_putint(_ADC_read_2);
+	//uart_putint(_ADC_read_3);
 }
 
