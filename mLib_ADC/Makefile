@@ -60,7 +60,7 @@ TARGET = main
 
 
 # List C source files here. (C dependencies are automatically generated.) |znacznik|
-SRC = $(TARGET).c 
+SRC = $(TARGET).c mLib-ADC.c
 
 
 # List Assembler source files here.
