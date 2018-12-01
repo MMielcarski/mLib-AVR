@@ -1,4 +1,4 @@
-main.o: main.c mLib_Timer.h /usr/lib/avr/include/util/delay.h \
+mLib_Timer.o: mLib_Timer.c mLib_Timer.h /usr/lib/avr/include/util/delay.h \
  /usr/lib/avr/include/inttypes.h /usr/lib/gcc/avr/5.4.0/include/stdint.h \
  /usr/lib/avr/include/stdint.h /usr/lib/avr/include/util/delay_basic.h \
  /usr/lib/avr/include/math.h /usr/lib/avr/include/avr/interrupt.h \

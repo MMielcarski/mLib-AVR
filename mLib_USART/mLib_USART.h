@@ -1,4 +1,3 @@
-
 /*!
 \file   mLib_USART.h
 \author Maciej Mielcarski

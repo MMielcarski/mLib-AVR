@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['mlib_5fadc_2eh',['mLib_ADC.h',['../mLib__ADC_8h.html',1,'']]],
-  ['mlib_5fusart_2eh',['mLib_USART.h',['../mLib__USART_8h.html',1,'']]]
+  ['delay_5fms',['delay_ms',['../mLib__Timer_8h.html#aad8c05f5391ab8440660f297373ba5de',1,'mLib_Timer.c']]]
 ];
