@@ -4,6 +4,7 @@
 // TODO: macros
 
 #include <avr/io.h>
+#include <avr/eeprom.h>
 
 #define F_CPU 16000000UL
 #define FOSC 16000000UL
@@ -55,13 +56,16 @@ int main(void)
 	USART_Init(MYUBRR);
 	int zm = 9;
 
+	uint8_t ByteOfData;
+	ByteOfData = eeprom_read_byte((uint8_t*)46);
+
 	while(1)
 	{
 		//uart_putchar(0x21);
 		//uart_putchar('K');
 		//uart_putint(zm);
 		uart_putchar(0x90);
-		uart_putchar(0x0F);
+		uart_putchar(0x50);
 		uart_putchar(0x3F);
 	}
 }

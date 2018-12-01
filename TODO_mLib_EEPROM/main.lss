@@ -13,19 +13,19 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY
   4 .debug_aranges 00000028  00000000  00000000  00000274  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_info   0000084d  00000000  00000000  0000029c  2**0
+  5 .debug_info   00000859  00000000  00000000  0000029c  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_abbrev 00000714  00000000  00000000  00000ae9  2**0
+  6 .debug_abbrev 00000721  00000000  00000000  00000af5  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_line   00000127  00000000  00000000  000011fd  2**0
+  7 .debug_line   00000127  00000000  00000000  00001216  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_frame  00000094  00000000  00000000  00001324  2**2
+  8 .debug_frame  00000094  00000000  00000000  00001340  2**2
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_str    00000377  00000000  00000000  000013b8  2**0
+  9 .debug_str    00000382  00000000  00000000  000013d4  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_loc    000000e8  00000000  00000000  0000172f  2**0
+ 10 .debug_loc    000000e8  00000000  00000000  00001756  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_ranges 00000018  00000000  00000000  00001817  2**0
+ 11 .debug_ranges 00000018  00000000  00000000  0000183e  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -196,8 +196,8 @@ int main(void)
 		uart_putchar(0x90);
  116:	80 e9       	ldi	r24, 0x90	; 144
  118:	0e 94 4b 00 	call	0x96	; 0x96 <uart_putchar>
-		uart_putchar(0x0F);
- 11c:	8f e0       	ldi	r24, 0x0F	; 15
+		uart_putchar(0x50);
+ 11c:	80 e5       	ldi	r24, 0x50	; 80
  11e:	0e 94 4b 00 	call	0x96	; 0x96 <uart_putchar>
 		uart_putchar(0x3F);
  122:	8f e3       	ldi	r24, 0x3F	; 63

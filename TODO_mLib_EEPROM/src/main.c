@@ -4,6 +4,7 @@
 // TODO: macros
 
 #include <avr/io.h>
+#include <avr/eeprom.h>
 
 #define F_CPU 16000000UL
 #define FOSC 16000000UL
@@ -55,13 +56,29 @@ int main(void)
 	USART_Init(MYUBRR);
 	int zm = 9;
 
+	uint8_t ByteOfData;
+	uint16_t WordOfData;
+	uint8_t StringOfData[10];
+
+	uint8_t EEMEM NonVolatileChar;
+	uint16_t EEMEM NonVolatileInt;
+	uint8_t EEMEM NonVolatileString[10];
+
+	uint8_t SRAMchar;
+
+	ByteOfData = eeprom_read_byte((uint8_t*)46);
+	WordOfData = eeprom_read_word((uint16_t*)46);
+	eeprom_read_block((void*)&StringOfData, (const void*)12, 10); // reading 10 bytes of memory starting from address 12 into a string
+	// (void*)&StringOfData - RAM pointer
+
+	SRAMchar = eeprom_read_byte(&NonVolatileChar);
 	while(1)
 	{
 		//uart_putchar(0x21);
 		//uart_putchar('K');
 		//uart_putint(zm);
 		uart_putchar(0x90);
-		uart_putchar(0x0F);
+		uart_putchar(0x50);
 		uart_putchar(0x3F);
 	}
 }

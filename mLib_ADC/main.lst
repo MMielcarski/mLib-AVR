@@ -14,65 +14,69 @@
    1:main.c        **** // device: 	AtMega 328p
    2:main.c        **** // author:  Maciej Mielcarski
    3:main.c        **** // ADC single and free running conversion single and multi-channel handled by timer
-   4:main.c        **** 
-   5:main.c        **** #include <avr/io.h>
-   6:main.c        **** #include <avr/interrupt.h>
-   7:main.c        **** 
-   8:main.c        **** #define F_CPU 16000000UL
-   9:main.c        **** #define TIM1_PSC 1024		// TIMER 1 prescaler value
-  10:main.c        **** #define TIM1_PER 100		// TIMER 1 desired period in miliseconds
-  11:main.c        **** #define FOSC 16000000UL
-  12:main.c        **** #define BAUD 9600				// UART
-  13:main.c        **** #define MYUBRR FOSC/16/BAUD-1	// UART
-  14:main.c        **** 
-  15:main.c        **** //#define SUPPLY_VOLT 5000	// [mV]
-  16:main.c        **** //#define ADC_RES 1024
-  17:main.c        **** 
-  18:main.c        **** #include <util/setbaud.h>
+   4:main.c        **** // TODO: voltage measurement
+   5:main.c        **** // TODO: macros
+   6:main.c        **** 
+   7:main.c        **** #include <avr/io.h>
+   8:main.c        **** #include <avr/interrupt.h>
+   9:main.c        **** 
+  10:main.c        **** #define F_CPU 16000000UL
+  11:main.c        **** #define TIM1_PSC 1024		// TIMER 1 prescaler value
+  12:main.c        **** #define TIM1_PER 10		// TIMER 1 desired period in miliseconds
+  13:main.c        **** #define FOSC 16000000UL
+  14:main.c        **** #define BAUD 9600				// UART
+  15:main.c        **** #define MYUBRR FOSC/16/BAUD-1	// UART
+  16:main.c        **** 
+  17:main.c        **** //#define SUPPLY_VOLT 5000	// [mV]
+  18:main.c        **** //#define ADC_RES 1024
   19:main.c        **** 
-  20:main.c        **** 	int _ADC_read_1 = 0;
-  21:main.c        **** 	int _ADC_read_2 = 0;
-  22:main.c        **** 	int _ADC_read_3 = 0;
-  23:main.c        **** 
-  24:main.c        **** // ------------------------- TIMER ----------------------------------------
+  20:main.c        **** #include <util/setbaud.h>
+  21:main.c        **** 
+  22:main.c        **** 	int _ADC_read_1 = 0;
+  23:main.c        **** 	int _ADC_read_2 = 0;
+  24:main.c        **** 	int _ADC_read_3 = 0;
   25:main.c        **** 
-  26:main.c        **** void TIM1_Init()	// enable interrupts
-  27:main.c        **** {
-  15               		.loc 1 27 0
+  26:main.c        **** 	int adc_prev = 0;
+  27:main.c        **** 
+  28:main.c        **** // ------------------------- TIMER ----------------------------------------
+  29:main.c        **** 
+  30:main.c        **** void TIM1_Init()	// enable interrupts
+  31:main.c        **** {
+  15               		.loc 1 31 0
   16               		.cfi_startproc
   17               	/* prologue: function */
   18               	/* frame size = 0 */
   19               	/* stack size = 0 */
   20               	.L__stack_usage = 0
-  28:main.c        ****     OCR1A = (((F_CPU/1000) / TIM1_PSC) * TIM1_PER) - 1;	// counter size
-  21               		.loc 1 28 0
-  22 0000 8BED      		ldi r24,lo8(-37)
-  23 0002 95E0      		ldi r25,lo8(5)
+  32:main.c        ****     OCR1A = (((F_CPU/1000) / TIM1_PSC) * TIM1_PER) - 1;	// counter size
+  21               		.loc 1 32 0
+  22 0000 85E9      		ldi r24,lo8(-107)
+  23 0002 90E0      		ldi r25,0
   24 0004 9093 8900 		sts 136+1,r25
   25 0008 8093 8800 		sts 136,r24
-  29:main.c        ****     TCCR1B |= (1 << WGM12);							// Mode 4, CTC on OCR1A
-  26               		.loc 1 29 0
+  33:main.c        ****     TCCR1B |= (1 << WGM12);							// Mode 4, CTC on OCR1A
+  26               		.loc 1 33 0
   27 000c E1E8      		ldi r30,lo8(-127)
   28 000e F0E0      		ldi r31,0
   29 0010 8081      		ld r24,Z
   30 0012 8860      		ori r24,lo8(8)
   31 0014 8083      		st Z,r24
-  30:main.c        ****     TIMSK1 |= (1 << OCIE1A);						// Set interrupt on compare match	
-  32               		.loc 1 30 0
+  34:main.c        ****     TIMSK1 |= (1 << OCIE1A);						// Set interrupt on compare match	
+  32               		.loc 1 34 0
   33 0016 AFE6      		ldi r26,lo8(111)
   34 0018 B0E0      		ldi r27,0
   35 001a 8C91      		ld r24,X
   36 001c 8260      		ori r24,lo8(2)
   37 001e 8C93      		st X,r24
-  31:main.c        ****     TCCR1B |= (1 << CS12) | (1 << CS10);			// set prescaler to 1024 and start the timer
-  38               		.loc 1 31 0
+  35:main.c        ****     TCCR1B |= (1 << CS12) | (1 << CS10);			// set prescaler to 1024 and start the timer
+  38               		.loc 1 35 0
   39 0020 8081      		ld r24,Z
   40 0022 8560      		ori r24,lo8(5)
   41 0024 8083      		st Z,r24
-  32:main.c        ****     sei();	
-  42               		.loc 1 32 0
+  36:main.c        ****     sei();	
+  42               		.loc 1 36 0
   43               	/* #APP */
-  44               	 ;  32 "main.c" 1
+  44               	 ;  36 "main.c" 1
   45 0026 7894      		sei
   46               	 ;  0 "" 2
   47               	/* #NOAPP */
@@ -82,32 +86,32 @@
   52               	.global	USART_Init
   54               	USART_Init:
   55               	.LFB1:
-  33:main.c        **** }
-  34:main.c        **** 
-  35:main.c        **** // ------------------------- UART ----------------------------------------
-  36:main.c        **** 
-  37:main.c        **** void USART_Init(unsigned int ubrr)		
-  38:main.c        **** {
-  56               		.loc 1 38 0
+  37:main.c        **** }
+  38:main.c        **** 
+  39:main.c        **** // ------------------------- UART ----------------------------------------
+  40:main.c        **** 
+  41:main.c        **** void USART_Init(unsigned int ubrr)		
+  42:main.c        **** {
+  56               		.loc 1 42 0
   57               		.cfi_startproc
   58               	.LVL0:
   59               	/* prologue: function */
   60               	/* frame size = 0 */
   61               	/* stack size = 0 */
   62               	.L__stack_usage = 0
-  39:main.c        ****    UBRR0H = (unsigned char)(ubrr>>8);	// set baud rate to 9600
-  63               		.loc 1 39 0
+  43:main.c        ****    UBRR0H = (unsigned char)(ubrr>>8);	// set baud rate to 9600
+  63               		.loc 1 43 0
   64 002a 9093 C500 		sts 197,r25
-  40:main.c        ****    UBRR0L = (unsigned char)ubrr;		//
-  65               		.loc 1 40 0
+  44:main.c        ****    UBRR0L = (unsigned char)ubrr;		//
+  65               		.loc 1 44 0
   66 002e 8093 C400 		sts 196,r24
-  41:main.c        ****    UCSR0B = (1<<RXEN0)|(1<<TXEN0);		// Enable receiver and transmitter 
-  67               		.loc 1 41 0
+  45:main.c        ****    UCSR0B = (1<<RXEN0)|(1<<TXEN0);		// Enable receiver and transmitter 
+  67               		.loc 1 45 0
   68 0032 88E1      		ldi r24,lo8(24)
   69               	.LVL1:
   70 0034 8093 C100 		sts 193,r24
-  42:main.c        ****    UCSR0C = (1<<USBS0)|(3<<UCSZ00);		// Set frame format: 8data, 2stop bit
-  71               		.loc 1 42 0
+  46:main.c        ****    UCSR0C = (1<<USBS0)|(3<<UCSZ00);		// Set frame format: 8data, 2stop bit
+  71               		.loc 1 46 0
   72 0038 8EE0      		ldi r24,lo8(14)
   73 003a 8093 C200 		sts 194,r24
   74 003e 0895      		ret
@@ -116,11 +120,11 @@
   78               	.global	uart_putchar
   80               	uart_putchar:
   81               	.LFB2:
-  43:main.c        **** }
-  44:main.c        **** 
-  45:main.c        **** void uart_putchar(char c) 
-  46:main.c        **** {
-  82               		.loc 1 46 0
+  47:main.c        **** }
+  48:main.c        **** 
+  49:main.c        **** void uart_putchar(char c) 
+  50:main.c        **** {
+  82               		.loc 1 50 0
   83               		.cfi_startproc
   84               	/* prologue: function */
   85               	/* frame size = 0 */
@@ -128,14 +132,14 @@
   87               	.L__stack_usage = 0
   88               	.LVL2:
   89               	.L4:
-  47:main.c        **** 	while ( !(UCSR0A & (1<<UDRE0)) )	// Wait for empty transmit buffer 
-  90               		.loc 1 47 0 discriminator 1
+  51:main.c        **** 	while ( !(UCSR0A & (1<<UDRE0)) )	// Wait for empty transmit buffer 
+  90               		.loc 1 51 0 discriminator 1
   91 0040 9091 C000 		lds r25,192
   92 0044 95FF      		sbrs r25,5
   93 0046 00C0      		rjmp .L4
-  48:main.c        **** 	;
-  49:main.c        ****     UDR0 = c;							// Put data into buffer, sends the data 
-  94               		.loc 1 49 0
+  52:main.c        **** 	;
+  53:main.c        ****     UDR0 = c;							// Put data into buffer, sends the data 
+  94               		.loc 1 53 0
   95 0048 8093 C600 		sts 198,r24
   96 004c 0895      		ret
   97               		.cfi_endproc
@@ -143,36 +147,36 @@
  100               	.global	uart_getchar
  102               	uart_getchar:
  103               	.LFB3:
-  50:main.c        **** }
-  51:main.c        **** 
-  52:main.c        **** char uart_getchar(void) {
- 104               		.loc 1 52 0
+  54:main.c        **** }
+  55:main.c        **** 
+  56:main.c        **** char uart_getchar(void) {
+ 104               		.loc 1 56 0
  105               		.cfi_startproc
  106               	/* prologue: function */
  107               	/* frame size = 0 */
  108               	/* stack size = 0 */
  109               	.L__stack_usage = 0
  110               	.L9:
-  53:main.c        ****     loop_until_bit_is_set(UCSR0A, RXC0); 	// Wait until data exists
- 111               		.loc 1 53 0 discriminator 1
+  57:main.c        ****     loop_until_bit_is_set(UCSR0A, RXC0); 	// Wait until data exists
+ 111               		.loc 1 57 0 discriminator 1
  112 004e 8091 C000 		lds r24,192
  113 0052 87FF      		sbrs r24,7
  114 0054 00C0      		rjmp .L9
-  54:main.c        ****     return UDR0;
- 115               		.loc 1 54 0
+  58:main.c        ****     return UDR0;
+ 115               		.loc 1 58 0
  116 0056 8091 C600 		lds r24,198
-  55:main.c        **** }
- 117               		.loc 1 55 0
+  59:main.c        **** }
+ 117               		.loc 1 59 0
  118 005a 0895      		ret
  119               		.cfi_endproc
  120               	.LFE3:
  122               	.global	uart_putstring
  124               	uart_putstring:
  125               	.LFB4:
-  56:main.c        **** 
-  57:main.c        **** void uart_putstring(char tab[])
-  58:main.c        **** {
- 126               		.loc 1 58 0
+  60:main.c        **** 
+  61:main.c        **** void uart_putstring(char tab[])
+  62:main.c        **** {
+ 126               		.loc 1 62 0
  127               		.cfi_startproc
  128               	.LVL3:
  129 005c CF93      		push r28
@@ -188,39 +192,39 @@
  139               	/* stack size = 2 */
  140               	.L__stack_usage = 2
  141               	.L12:
-  59:main.c        **** 	int i =0;
-  60:main.c        **** 	while (( UCSR0A & (1<<UDRE0))  == 0){};
- 142               		.loc 1 60 0 discriminator 1
+  63:main.c        **** 	int i =0;
+  64:main.c        **** 	while (( UCSR0A & (1<<UDRE0))  == 0){};
+ 142               		.loc 1 64 0 discriminator 1
  143 0060 2091 C000 		lds r18,192
  144 0064 25FF      		sbrs r18,5
  145 0066 00C0      		rjmp .L12
  146 0068 EC01      		movw r28,r24
  147               	.LVL4:
  148               	.L13:
-  61:main.c        ****         while (tab[i] != 0x00)
- 149               		.loc 1 61 0
+  65:main.c        ****         while (tab[i] != 0x00)
+ 149               		.loc 1 65 0
  150 006a 8991      		ld r24,Y+
  151 006c 8823      		tst r24
  152 006e 01F0      		breq .L17
-  62:main.c        **** 		{ 
-  63:main.c        ****             uart_putchar(tab[i]);
- 153               		.loc 1 63 0
+  66:main.c        **** 		{ 
+  67:main.c        ****             uart_putchar(tab[i]);
+ 153               		.loc 1 67 0
  154 0070 0E94 0000 		call uart_putchar
  155               	.LVL5:
  156 0074 00C0      		rjmp .L13
  157               	.L17:
-  64:main.c        **** 			i++; 
-  65:main.c        ****         }
-  66:main.c        **** 		uart_putchar('\n');
- 158               		.loc 1 66 0
+  68:main.c        **** 			i++; 
+  69:main.c        ****         }
+  70:main.c        **** 		uart_putchar('\n');
+ 158               		.loc 1 70 0
  159 0076 8AE0      		ldi r24,lo8(10)
  160               	/* epilogue start */
-  67:main.c        **** }
- 161               		.loc 1 67 0
+  71:main.c        **** }
+ 161               		.loc 1 71 0
  162 0078 DF91      		pop r29
  163 007a CF91      		pop r28
-  66:main.c        **** }
- 164               		.loc 1 66 0
+  70:main.c        **** }
+ 164               		.loc 1 70 0
  165 007c 0C94 0000 		jmp uart_putchar
  166               	.LVL6:
  167               		.cfi_endproc
@@ -228,10 +232,10 @@
  170               	.global	uart_putint
  172               	uart_putint:
  173               	.LFB5:
-  68:main.c        **** 
-  69:main.c        **** void uart_putint(int value)
-  70:main.c        **** {
- 174               		.loc 1 70 0
+  72:main.c        **** 
+  73:main.c        **** void uart_putint(int value)
+  74:main.c        **** {
+ 174               		.loc 1 74 0
  175               		.cfi_startproc
  176               	.LVL7:
  177 0080 CF93      		push r28
@@ -258,9 +262,9 @@
  198               	/* frame size = 16 */
  199               	/* stack size = 18 */
  200               	.L__stack_usage = 18
-  71:main.c        **** 	char tab[16];
-  72:main.c        **** 	itoa(value,tab,10);
- 201               		.loc 1 72 0
+  75:main.c        **** 	char tab[16];
+  76:main.c        **** 	itoa(value,tab,10);
+ 201               		.loc 1 76 0
  202 0094 4AE0      		ldi r20,lo8(10)
  203 0096 50E0      		ldi r21,0
  204 0098 BE01      		movw r22,r28
@@ -268,15 +272,15 @@
  206 009c 7F4F      		sbci r23,-1
  207 009e 0E94 0000 		call itoa
  208               	.LVL8:
-  73:main.c        **** 	uart_putstring(tab);
- 209               		.loc 1 73 0
+  77:main.c        **** 	uart_putstring(tab);
+ 209               		.loc 1 77 0
  210 00a2 CE01      		movw r24,r28
  211 00a4 0196      		adiw r24,1
  212 00a6 0E94 0000 		call uart_putstring
  213               	.LVL9:
  214               	/* epilogue start */
-  74:main.c        **** }
- 215               		.loc 1 74 0
+  78:main.c        **** }
+ 215               		.loc 1 78 0
  216 00aa 6096      		adiw r28,16
  217 00ac 0FB6      		in __tmp_reg__,__SREG__
  218 00ae F894      		cli
@@ -291,34 +295,34 @@
  228               	.global	ADC_Init
  230               	ADC_Init:
  231               	.LFB6:
-  75:main.c        **** 
-  76:main.c        **** // ------------------------- ADC ----------------------------------------
-  77:main.c        **** 
-  78:main.c        **** void ADC_Init()
-  79:main.c        **** {
- 232               		.loc 1 79 0
+  79:main.c        **** 
+  80:main.c        **** // ------------------------- ADC ----------------------------------------
+  81:main.c        **** 
+  82:main.c        **** void ADC_Init()
+  83:main.c        **** {
+ 232               		.loc 1 83 0
  233               		.cfi_startproc
  234               	/* prologue: function */
  235               	/* frame size = 0 */
  236               	/* stack size = 0 */
  237               	.L__stack_usage = 0
-  80:main.c        **** 	ADCSRA |= (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0); // Set ADC prescalar to 128 - 125KHz sample 
- 238               		.loc 1 80 0
+  84:main.c        **** 	ADCSRA |= (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0); // Set ADC prescalar to 128 - 125KHz sample 
+ 238               		.loc 1 84 0
  239 00bc EAE7      		ldi r30,lo8(122)
  240 00be F0E0      		ldi r31,0
  241 00c0 8081      		ld r24,Z
  242 00c2 8760      		ori r24,lo8(7)
  243 00c4 8083      		st Z,r24
-  81:main.c        **** 	ADMUX |= (1 << REFS0); 	// Set ADC reference to AVCC
- 244               		.loc 1 81 0
+  85:main.c        **** 	ADMUX |= (1 << REFS0); 	// Set ADC reference to AVCC
+ 244               		.loc 1 85 0
  245 00c6 ACE7      		ldi r26,lo8(124)
  246 00c8 B0E0      		ldi r27,0
  247 00ca 8C91      		ld r24,X
  248 00cc 8064      		ori r24,lo8(64)
  249 00ce 8C93      		st X,r24
-  82:main.c        **** 	
-  83:main.c        **** 	ADCSRA |= (1 << ADEN);  // Enable ADC
- 250               		.loc 1 83 0
+  86:main.c        **** 
+  87:main.c        **** 	ADCSRA |= (1 << ADEN);  // Enable ADC
+ 250               		.loc 1 87 0
  251 00d0 8081      		ld r24,Z
  252 00d2 8068      		ori r24,lo8(-128)
  253 00d4 8083      		st Z,r24
@@ -328,22 +332,22 @@
  258               	.global	ADC_read
  260               	ADC_read:
  261               	.LFB7:
-  84:main.c        **** 	//ADCSRA |= (1 << ADSC);  // Start A2D Conversions
-  85:main.c        **** 	//ADCSRA |= (1 << ADATE);	// for free running mode
-  86:main.c        **** }
-  87:main.c        **** 
-  88:main.c        **** uint16_t ADC_read(uint8_t channel)		
-  89:main.c        **** {
- 262               		.loc 1 89 0
+  88:main.c        **** 	//ADCSRA |= (1 << ADSC);  // Start A2D Conversions
+  89:main.c        **** 	//ADCSRA |= (1 << ADATE);	// for free running mode
+  90:main.c        **** }
+  91:main.c        **** 
+  92:main.c        **** uint16_t ADC_read(uint8_t channel)		
+  93:main.c        **** {
+ 262               		.loc 1 93 0
  263               		.cfi_startproc
  264               	.LVL10:
  265               	/* prologue: function */
  266               	/* frame size = 0 */
  267               	/* stack size = 0 */
  268               	.L__stack_usage = 0
-  90:main.c        **** 	channel &= 0x07;					// AND operation with 7 (will keep channel between 0-7) 
-  91:main.c        **** 	ADMUX = (ADMUX & 0xF8) | channel;	// clears 3 first bits before OR
- 269               		.loc 1 91 0
+  94:main.c        **** 	channel &= 0x07;					// AND operation with 7 (will keep channel between 0-7) 
+  95:main.c        **** 	ADMUX = (ADMUX & 0xF8) | channel;	// clears 3 first bits before OR
+ 269               		.loc 1 95 0
  270 00d8 9091 7C00 		lds r25,124
  271 00dc 987F      		andi r25,lo8(-8)
  272 00de 8770      		andi r24,lo8(7)
@@ -351,24 +355,24 @@
  274 00e0 892B      		or r24,r25
  275               	.LVL12:
  276 00e2 8093 7C00 		sts 124,r24
-  92:main.c        **** 
-  93:main.c        **** 	ADCSRA |= (1 << ADSC);				// start single convesrion
- 277               		.loc 1 93 0
+  96:main.c        **** 
+  97:main.c        **** 	ADCSRA |= (1 << ADSC);				// start single convesrion
+ 277               		.loc 1 97 0
  278 00e6 8091 7A00 		lds r24,122
  279 00ea 8064      		ori r24,lo8(64)
  280 00ec 8093 7A00 		sts 122,r24
  281               	.L21:
-  94:main.c        **** 	while(ADCSRA & (1 << ADSC));		// wait for conversion to complete
- 282               		.loc 1 94 0 discriminator 1
+  98:main.c        **** 	while(ADCSRA & (1 << ADSC));		// wait for conversion to complete
+ 282               		.loc 1 98 0 discriminator 1
  283 00f0 8091 7A00 		lds r24,122
  284 00f4 86FD      		sbrc r24,6
  285 00f6 00C0      		rjmp .L21
-  95:main.c        **** 	return ADCW;
- 286               		.loc 1 95 0
+  99:main.c        **** 	return ADCW;
+ 286               		.loc 1 99 0
  287 00f8 8091 7800 		lds r24,120
  288 00fc 9091 7900 		lds r25,120+1
-  96:main.c        **** }
- 289               		.loc 1 96 0
+ 100:main.c        **** }
+ 289               		.loc 1 100 0
  290 0100 0895      		ret
  291               		.cfi_endproc
  292               	.LFE7:
@@ -376,29 +380,29 @@
  295               	.global	main
  297               	main:
  298               	.LFB8:
-  97:main.c        **** 
-  98:main.c        **** // ------------------------- MAIN ----------------------------------------
-  99:main.c        **** 
- 100:main.c        **** int main(void)
- 101:main.c        **** {
- 299               		.loc 1 101 0
+ 101:main.c        **** 
+ 102:main.c        **** // ------------------------- MAIN ----------------------------------------
+ 103:main.c        **** 
+ 104:main.c        **** int main(void)
+ 105:main.c        **** {
+ 299               		.loc 1 105 0
  300               		.cfi_startproc
  301               	/* prologue: function */
  302               	/* frame size = 0 */
  303               	/* stack size = 0 */
  304               	.L__stack_usage = 0
- 102:main.c        **** 	USART_Init(MYUBRR);
- 305               		.loc 1 102 0
+ 106:main.c        **** 	USART_Init(MYUBRR);
+ 305               		.loc 1 106 0
  306 0000 87E6      		ldi r24,lo8(103)
  307 0002 90E0      		ldi r25,0
  308 0004 0E94 0000 		call USART_Init
  309               	.LVL13:
- 103:main.c        **** 	TIM1_Init();
- 310               		.loc 1 103 0
+ 107:main.c        **** 	TIM1_Init();
+ 310               		.loc 1 107 0
  311 0008 0E94 0000 		call TIM1_Init
  312               	.LVL14:
- 104:main.c        **** 	ADC_Init();
- 313               		.loc 1 104 0
+ 108:main.c        **** 	ADC_Init();
+ 313               		.loc 1 108 0
  314 000c 0E94 0000 		call ADC_Init
  315               	.LVL15:
  316               	.L24:
@@ -409,20 +413,20 @@
  322               	.global	__vector_11
  324               	__vector_11:
  325               	.LFB9:
- 105:main.c        **** 
- 106:main.c        **** 	//double ADC_voltage = 0;
- 107:main.c        **** 
- 108:main.c        **** 	while(1)
- 109:main.c        **** 	{
- 110:main.c        **** 		//ADC_voltage = ADC_read*SUPPLY_VOLT/ADC_RES;	// problem z wysylaniem float po UART
- 111:main.c        **** 	}
- 112:main.c        **** }
- 113:main.c        **** 
- 114:main.c        **** // -----------------------------------------------------------------
- 115:main.c        **** 
- 116:main.c        **** ISR(TIMER1_COMPA_vect)	// timer1 overflow interrupt
- 117:main.c        **** {
- 326               		.loc 1 117 0
+ 109:main.c        **** 
+ 110:main.c        **** 	//double ADC_voltage = 0;
+ 111:main.c        **** 
+ 112:main.c        **** 	while(1)
+ 113:main.c        **** 	{
+ 114:main.c        **** 		//ADC_voltage = ADC_read*SUPPLY_VOLT/ADC_RES;	// problem z wysylaniem float po UART
+ 115:main.c        **** 	}
+ 116:main.c        **** }
+ 117:main.c        **** 
+ 118:main.c        **** // -----------------------------------------------------------------
+ 119:main.c        **** 
+ 120:main.c        **** ISR(TIMER1_COMPA_vect)	// timer1 overflow interrupt
+ 121:main.c        **** {
+ 326               		.loc 1 121 0
  327               		.cfi_startproc
  328 0102 1F92      		push r1
  329               	.LCFI6:
@@ -487,91 +491,104 @@
  388               	/* frame size = 0 */
  389               	/* stack size = 15 */
  390               	.L__stack_usage = 15
- 118:main.c        **** 	_ADC_read_1 = ADC_read(0);
- 391               		.loc 1 118 0
- 392 0124 80E0      		ldi r24,0
- 393 0126 0E94 0000 		call ADC_read
- 394               	.LVL16:
- 395 012a 9093 0000 		sts _ADC_read_1+1,r25
- 396 012e 8093 0000 		sts _ADC_read_1,r24
- 119:main.c        **** 	_ADC_read_2 = ADC_read(1);
- 397               		.loc 1 119 0
- 398 0132 81E0      		ldi r24,lo8(1)
- 399 0134 0E94 0000 		call ADC_read
- 400               	.LVL17:
- 401 0138 9093 0000 		sts _ADC_read_2+1,r25
- 402 013c 8093 0000 		sts _ADC_read_2,r24
- 120:main.c        **** 	_ADC_read_3 = ADC_read(2);
- 403               		.loc 1 120 0
- 404 0140 82E0      		ldi r24,lo8(2)
- 405 0142 0E94 0000 		call ADC_read
- 406               	.LVL18:
- 407 0146 9093 0000 		sts _ADC_read_3+1,r25
- 408 014a 8093 0000 		sts _ADC_read_3,r24
- 121:main.c        **** 
- 122:main.c        **** 	//uart_putint(_ADC_read_1);
- 123:main.c        **** 	uart_putint(_ADC_read_2);
- 409               		.loc 1 123 0
- 410 014e 8091 0000 		lds r24,_ADC_read_2
- 411 0152 9091 0000 		lds r25,_ADC_read_2+1
- 412 0156 0E94 0000 		call uart_putint
- 413               	.LVL19:
- 414               	/* epilogue start */
- 124:main.c        **** 	//uart_putint(_ADC_read_3);
- 125:main.c        **** }
- 415               		.loc 1 125 0
- 416 015a FF91      		pop r31
- 417 015c EF91      		pop r30
- 418 015e BF91      		pop r27
- 419 0160 AF91      		pop r26
- 420 0162 9F91      		pop r25
- 421 0164 8F91      		pop r24
- 422 0166 7F91      		pop r23
- 423 0168 6F91      		pop r22
- 424 016a 5F91      		pop r21
- 425 016c 4F91      		pop r20
- 426 016e 3F91      		pop r19
- 427 0170 2F91      		pop r18
- 428 0172 0F90      		pop r0
- 429 0174 0FBE      		out __SREG__,r0
- 430 0176 0F90      		pop r0
- 431 0178 1F90      		pop r1
- 432 017a 1895      		reti
- 433               		.cfi_endproc
- 434               	.LFE9:
- 436               	.global	_ADC_read_3
- 437               		.section .bss
- 440               	_ADC_read_3:
- 441 0000 0000      		.zero	2
- 442               	.global	_ADC_read_2
- 445               	_ADC_read_2:
- 446 0002 0000      		.zero	2
- 447               	.global	_ADC_read_1
- 450               	_ADC_read_1:
- 451 0004 0000      		.zero	2
- 452               		.text
- 453               	.Letext0:
- 454               		.file 2 "/usr/lib/avr/include/stdint.h"
+ 122:main.c        **** 	adc_prev = _ADC_read_1;
+ 391               		.loc 1 122 0
+ 392 0124 8091 0000 		lds r24,_ADC_read_1
+ 393 0128 9091 0000 		lds r25,_ADC_read_1+1
+ 394 012c 9093 0000 		sts adc_prev+1,r25
+ 395 0130 8093 0000 		sts adc_prev,r24
+ 123:main.c        **** 	_ADC_read_1 = (ADC_read(0)>>3);
+ 396               		.loc 1 123 0
+ 397 0134 80E0      		ldi r24,0
+ 398 0136 0E94 0000 		call ADC_read
+ 399               	.LVL16:
+ 400 013a 23E0      		ldi r18,3
+ 401               		1:
+ 402 013c 9695      		lsr r25
+ 403 013e 8795      		ror r24
+ 404 0140 2A95      		dec r18
+ 405 0142 01F4      		brne 1b
+ 406 0144 9093 0000 		sts _ADC_read_1+1,r25
+ 407 0148 8093 0000 		sts _ADC_read_1,r24
+ 124:main.c        **** 	//_ADC_read_2 = ADC_read(1);
+ 125:main.c        **** 	//_ADC_read_3 = ADC_read(2);
+ 126:main.c        **** 
+ 127:main.c        **** 	//uart_putint(_ADC_read_1);
+ 128:main.c        **** 	if(_ADC_read_1 != adc_prev)
+ 408               		.loc 1 128 0
+ 409 014c 2091 0000 		lds r18,adc_prev
+ 410 0150 3091 0000 		lds r19,adc_prev+1
+ 411 0154 8217      		cp r24,r18
+ 412 0156 9307      		cpc r25,r19
+ 413 0158 01F0      		breq .L25
+ 129:main.c        **** 	{
+ 130:main.c        **** 		uart_putint(_ADC_read_1);
+ 414               		.loc 1 130 0
+ 415 015a 0E94 0000 		call uart_putint
+ 416               	.LVL17:
+ 417               	.L25:
+ 418               	/* epilogue start */
+ 131:main.c        **** 	}
+ 132:main.c        **** 
+ 133:main.c        **** 	//uart_putint(_ADC_read_3);
+ 134:main.c        **** }
+ 419               		.loc 1 134 0
+ 420 015e FF91      		pop r31
+ 421 0160 EF91      		pop r30
+ 422 0162 BF91      		pop r27
+ 423 0164 AF91      		pop r26
+ 424 0166 9F91      		pop r25
+ 425 0168 8F91      		pop r24
+ 426 016a 7F91      		pop r23
+ 427 016c 6F91      		pop r22
+ 428 016e 5F91      		pop r21
+ 429 0170 4F91      		pop r20
+ 430 0172 3F91      		pop r19
+ 431 0174 2F91      		pop r18
+ 432 0176 0F90      		pop r0
+ 433 0178 0FBE      		out __SREG__,r0
+ 434 017a 0F90      		pop r0
+ 435 017c 1F90      		pop r1
+ 436 017e 1895      		reti
+ 437               		.cfi_endproc
+ 438               	.LFE9:
+ 440               	.global	adc_prev
+ 441               		.section .bss
+ 444               	adc_prev:
+ 445 0000 0000      		.zero	2
+ 446               	.global	_ADC_read_3
+ 449               	_ADC_read_3:
+ 450 0002 0000      		.zero	2
+ 451               	.global	_ADC_read_2
+ 454               	_ADC_read_2:
+ 455 0004 0000      		.zero	2
+ 456               	.global	_ADC_read_1
+ 459               	_ADC_read_1:
+ 460 0006 0000      		.zero	2
+ 461               		.text
+ 462               	.Letext0:
+ 463               		.file 2 "/usr/lib/avr/include/stdint.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 main.c
-     /tmp/ccHT6JrF.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/ccHT6JrF.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/ccHT6JrF.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/ccHT6JrF.s:5      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccHT6JrF.s:6      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccHT6JrF.s:12     .text:0000000000000000 TIM1_Init
-     /tmp/ccHT6JrF.s:54     .text:000000000000002a USART_Init
-     /tmp/ccHT6JrF.s:80     .text:0000000000000040 uart_putchar
-     /tmp/ccHT6JrF.s:102    .text:000000000000004e uart_getchar
-     /tmp/ccHT6JrF.s:124    .text:000000000000005c uart_putstring
-     /tmp/ccHT6JrF.s:172    .text:0000000000000080 uart_putint
-     /tmp/ccHT6JrF.s:230    .text:00000000000000bc ADC_Init
-     /tmp/ccHT6JrF.s:260    .text:00000000000000d8 ADC_read
-     /tmp/ccHT6JrF.s:297    .text.startup:0000000000000000 main
-     /tmp/ccHT6JrF.s:324    .text:0000000000000102 __vector_11
-     /tmp/ccHT6JrF.s:450    .bss:0000000000000004 _ADC_read_1
-     /tmp/ccHT6JrF.s:445    .bss:0000000000000002 _ADC_read_2
-     /tmp/ccHT6JrF.s:440    .bss:0000000000000000 _ADC_read_3
+     /tmp/ccZZsYuO.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccZZsYuO.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccZZsYuO.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccZZsYuO.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccZZsYuO.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccZZsYuO.s:12     .text:0000000000000000 TIM1_Init
+     /tmp/ccZZsYuO.s:54     .text:000000000000002a USART_Init
+     /tmp/ccZZsYuO.s:80     .text:0000000000000040 uart_putchar
+     /tmp/ccZZsYuO.s:102    .text:000000000000004e uart_getchar
+     /tmp/ccZZsYuO.s:124    .text:000000000000005c uart_putstring
+     /tmp/ccZZsYuO.s:172    .text:0000000000000080 uart_putint
+     /tmp/ccZZsYuO.s:230    .text:00000000000000bc ADC_Init
+     /tmp/ccZZsYuO.s:260    .text:00000000000000d8 ADC_read
+     /tmp/ccZZsYuO.s:297    .text.startup:0000000000000000 main
+     /tmp/ccZZsYuO.s:324    .text:0000000000000102 __vector_11
+     /tmp/ccZZsYuO.s:459    .bss:0000000000000006 _ADC_read_1
+     /tmp/ccZZsYuO.s:444    .bss:0000000000000000 adc_prev
+     /tmp/ccZZsYuO.s:449    .bss:0000000000000002 _ADC_read_3
+     /tmp/ccZZsYuO.s:454    .bss:0000000000000004 _ADC_read_2
 
 UNDEFINED SYMBOLS
 itoa
