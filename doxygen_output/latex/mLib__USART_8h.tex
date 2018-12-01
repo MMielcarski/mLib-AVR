@@ -1,0 +1,138 @@
+\hypertarget{mLib__USART_8h}{}\section{m\+Lib\+\_\+\+U\+S\+A\+R\+T/m\+Lib\+\_\+\+U\+S\+A\+RT.h File Reference}
+\label{mLib__USART_8h}\index{mLib\_USART/mLib\_USART.h@{mLib\_USART/mLib\_USART.h}}
+
+
+serial communication via U\+S\+A\+RT  
+
+
+{\ttfamily \#include $<$avr/io.\+h$>$}\newline
+{\ttfamily \#include $<$util/setbaud.\+h$>$}\newline
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{mLib__USART_8h_a43bafb28b29491ec7f871319b5a3b2f8}\label{mLib__USART_8h_a43bafb28b29491ec7f871319b5a3b2f8}} 
+\#define {\bfseries F\+\_\+\+C\+PU}~16000000\+UL
+\item 
+\mbox{\Hypertarget{mLib__USART_8h_a802b2b582b121e4632aa9a491d503720}\label{mLib__USART_8h_a802b2b582b121e4632aa9a491d503720}} 
+\#define {\bfseries F\+O\+SC}~16000000\+UL
+\item 
+\mbox{\Hypertarget{mLib__USART_8h_a62634036639f88eece6fbf226b45f84b}\label{mLib__USART_8h_a62634036639f88eece6fbf226b45f84b}} 
+\#define {\bfseries B\+A\+UD}~9600
+\item 
+\mbox{\Hypertarget{mLib__USART_8h_a711e9130c825a7269c8c87dbb57a85e0}\label{mLib__USART_8h_a711e9130c825a7269c8c87dbb57a85e0}} 
+\#define {\bfseries M\+Y\+U\+B\+RR}~F\+O\+SC/16/B\+A\+UD-\/1
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{mLib__USART_8h_ab567886523c8a226f508cfeb9073c400}{usart\+\_\+init}} (unsigned int ubrr)
+\begin{DoxyCompactList}\small\item\em register initialization for U\+S\+A\+RT \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{mLib__USART_8h_a5b71c846153fe404165aee5f4bdcd000}{usart\+\_\+put\+\_\+8bit}} (uint8\+\_\+t data)
+\begin{DoxyCompactList}\small\item\em sending unsigned 8bit type over U\+S\+A\+RT \end{DoxyCompactList}\item 
+uint8\+\_\+t \mbox{\hyperlink{mLib__USART_8h_a129ee3ce192070baeff15cd35a9f0a41}{usart\+\_\+get\+\_\+8bit}} (void)
+\begin{DoxyCompactList}\small\item\em receiving unsigned 8bit type from U\+S\+A\+RT \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{mLib__USART_8h_ad30dda4de6b53e90ac04fc19b6c8e313}{usart\+\_\+putstring}} (char tab\mbox{[}$\,$\mbox{]})
+\begin{DoxyCompactList}\small\item\em sending string over U\+S\+A\+RT \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{mLib__USART_8h_a3339dda8eb8e79b7ee99624e5cf37f55}{usart\+\_\+put\+\_\+16bit}} (int16\+\_\+t value)
+\begin{DoxyCompactList}\small\item\em sending int type over U\+S\+A\+RT \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+serial communication via U\+S\+A\+RT 
+
+\begin{DoxyAuthor}{Author}
+Maciej Mielcarski 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+01.\+12.\+2018 \begin{DoxyVerb}    tested on: Atmega328p, Atmega32
+\end{DoxyVerb}
+ 
+\end{DoxyDate}
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{mLib__USART_8h_a129ee3ce192070baeff15cd35a9f0a41}\label{mLib__USART_8h_a129ee3ce192070baeff15cd35a9f0a41}} 
+\index{mLib\_USART.h@{mLib\_USART.h}!usart\_get\_8bit@{usart\_get\_8bit}}
+\index{usart\_get\_8bit@{usart\_get\_8bit}!mLib\_USART.h@{mLib\_USART.h}}
+\subsubsection{\texorpdfstring{usart\_get\_8bit()}{usart\_get\_8bit()}}
+{\footnotesize\ttfamily uint8\+\_\+t usart\+\_\+get\+\_\+8bit (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+
+
+receiving unsigned 8bit type from U\+S\+A\+RT 
+
+\begin{DoxyReturn}{Returns}
+char type 8 bit value 
+\end{DoxyReturn}
+\mbox{\Hypertarget{mLib__USART_8h_ab567886523c8a226f508cfeb9073c400}\label{mLib__USART_8h_ab567886523c8a226f508cfeb9073c400}} 
+\index{mLib\_USART.h@{mLib\_USART.h}!usart\_init@{usart\_init}}
+\index{usart\_init@{usart\_init}!mLib\_USART.h@{mLib\_USART.h}}
+\subsubsection{\texorpdfstring{usart\_init()}{usart\_init()}}
+{\footnotesize\ttfamily void usart\+\_\+init (\begin{DoxyParamCaption}\item[{unsigned int}]{ubrr }\end{DoxyParamCaption})}
+
+
+
+register initialization for U\+S\+A\+RT 
+
+
+\begin{DoxyParams}{Parameters}
+{\em ubrr} & -\/ U\+B\+RR value preferably calculated using M\+Y\+U\+B\+RR macro \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
+\mbox{\Hypertarget{mLib__USART_8h_a3339dda8eb8e79b7ee99624e5cf37f55}\label{mLib__USART_8h_a3339dda8eb8e79b7ee99624e5cf37f55}} 
+\index{mLib\_USART.h@{mLib\_USART.h}!usart\_put\_16bit@{usart\_put\_16bit}}
+\index{usart\_put\_16bit@{usart\_put\_16bit}!mLib\_USART.h@{mLib\_USART.h}}
+\subsubsection{\texorpdfstring{usart\_put\_16bit()}{usart\_put\_16bit()}}
+{\footnotesize\ttfamily void usart\+\_\+put\+\_\+16bit (\begin{DoxyParamCaption}\item[{int16\+\_\+t}]{value }\end{DoxyParamCaption})}
+
+
+
+sending int type over U\+S\+A\+RT 
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & -\/ 16 bit value to send \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
+\mbox{\Hypertarget{mLib__USART_8h_a5b71c846153fe404165aee5f4bdcd000}\label{mLib__USART_8h_a5b71c846153fe404165aee5f4bdcd000}} 
+\index{mLib\_USART.h@{mLib\_USART.h}!usart\_put\_8bit@{usart\_put\_8bit}}
+\index{usart\_put\_8bit@{usart\_put\_8bit}!mLib\_USART.h@{mLib\_USART.h}}
+\subsubsection{\texorpdfstring{usart\_put\_8bit()}{usart\_put\_8bit()}}
+{\footnotesize\ttfamily void usart\+\_\+put\+\_\+8bit (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{data }\end{DoxyParamCaption})}
+
+
+
+sending unsigned 8bit type over U\+S\+A\+RT 
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & -\/ 8 bit value to send \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
+\mbox{\Hypertarget{mLib__USART_8h_ad30dda4de6b53e90ac04fc19b6c8e313}\label{mLib__USART_8h_ad30dda4de6b53e90ac04fc19b6c8e313}} 
+\index{mLib\_USART.h@{mLib\_USART.h}!usart\_putstring@{usart\_putstring}}
+\index{usart\_putstring@{usart\_putstring}!mLib\_USART.h@{mLib\_USART.h}}
+\subsubsection{\texorpdfstring{usart\_putstring()}{usart\_putstring()}}
+{\footnotesize\ttfamily void usart\+\_\+putstring (\begin{DoxyParamCaption}\item[{char}]{tab\mbox{[}$\,$\mbox{]} }\end{DoxyParamCaption})}
+
+
+
+sending string over U\+S\+A\+RT 
+
+
+\begin{DoxyParams}{Parameters}
+{\em tab\mbox{[}$\,$\mbox{]}} & pointer to array with string to send \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
