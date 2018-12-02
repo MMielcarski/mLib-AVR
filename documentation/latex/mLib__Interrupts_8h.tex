@@ -1,0 +1,106 @@
+\hypertarget{mLib__Interrupts_8h}{}\section{m\+Lib\+\_\+\+Interrupts/m\+Lib\+\_\+\+Interrupts.h File Reference}
+\label{mLib__Interrupts_8h}\index{mLib\_Interrupts/mLib\_Interrupts.h@{mLib\_Interrupts/mLib\_Interrupts.h}}
+
+
+external and timer interrupts handle  
+
+
+{\ttfamily \#include $<$avr/interrupt.\+h$>$}\newline
+{\ttfamily \#include $<$util/delay.\+h$>$}\newline
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{mLib__Interrupts_8h_a43bafb28b29491ec7f871319b5a3b2f8}\label{mLib__Interrupts_8h_a43bafb28b29491ec7f871319b5a3b2f8}} 
+\#define {\bfseries F\+\_\+\+C\+PU}~16000000\+UL
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{mLib__Interrupts_8h_af29da5f76f3bb508b6d28479eb878a29}{ext\+\_\+intrr\+\_\+init}} (uint8\+\_\+t intrr\+\_\+pin, uint8\+\_\+t intrr\+\_\+ddr, uint8\+\_\+t intrr\+\_\+port)
+\begin{DoxyCompactList}\small\item\em external interrupt initialization on specified pin \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{mLib__Interrupts_8h_aad8c05f5391ab8440660f297373ba5de}{delay\+\_\+ms}} (unsigned int period)
+\begin{DoxyCompactList}\small\item\em delay workaround for high period values \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{mLib__Interrupts_8h_a56a4127262477485061a29e995d349b9}{timer\+\_\+init}} (uint16\+\_\+t prescaler, uint16\+\_\+t period)
+\begin{DoxyCompactList}\small\item\em register initialization for Timer \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+external and timer interrupts handle 
+
+\begin{DoxyAuthor}{Author}
+Maciej Mielcarski 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+02.\+12.\+2018 tested on atmega328p 
+\end{DoxyDate}
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{mLib__Interrupts_8h_aad8c05f5391ab8440660f297373ba5de}\label{mLib__Interrupts_8h_aad8c05f5391ab8440660f297373ba5de}} 
+\index{mLib\_Interrupts.h@{mLib\_Interrupts.h}!delay\_ms@{delay\_ms}}
+\index{delay\_ms@{delay\_ms}!mLib\_Interrupts.h@{mLib\_Interrupts.h}}
+\subsubsection{\texorpdfstring{delay\_ms()}{delay\_ms()}}
+{\footnotesize\ttfamily void delay\+\_\+ms (\begin{DoxyParamCaption}\item[{unsigned int}]{period }\end{DoxyParamCaption})}
+
+
+
+delay workaround for high period values 
+
+
+\begin{DoxyParams}{Parameters}
+{\em period} & -\/ inaccurate delay period \mbox{[}ms\mbox{]} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void
+\end{DoxyReturn}
+
+\begin{DoxyParams}{Parameters}
+{\em period} & -\/ delay period in cpu ticks \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
+\mbox{\Hypertarget{mLib__Interrupts_8h_af29da5f76f3bb508b6d28479eb878a29}\label{mLib__Interrupts_8h_af29da5f76f3bb508b6d28479eb878a29}} 
+\index{mLib\_Interrupts.h@{mLib\_Interrupts.h}!ext\_intrr\_init@{ext\_intrr\_init}}
+\index{ext\_intrr\_init@{ext\_intrr\_init}!mLib\_Interrupts.h@{mLib\_Interrupts.h}}
+\subsubsection{\texorpdfstring{ext\_intrr\_init()}{ext\_intrr\_init()}}
+{\footnotesize\ttfamily void ext\+\_\+intrr\+\_\+init (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{intrr\+\_\+pin,  }\item[{uint8\+\_\+t}]{intrr\+\_\+ddr,  }\item[{uint8\+\_\+t}]{intrr\+\_\+port }\end{DoxyParamCaption})}
+
+
+
+external interrupt initialization on specified pin 
+
+
+\begin{DoxyParams}{Parameters}
+{\em intrr\+\_\+pin} & -\/ interrupt pin \\
+\hline
+{\em intrr\+\_\+ddr} & -\/ interrupt pin D\+DR register \\
+\hline
+{\em intrr\+\_\+port} & -\/ interrupt pin P\+O\+RT register \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
+\mbox{\Hypertarget{mLib__Interrupts_8h_a56a4127262477485061a29e995d349b9}\label{mLib__Interrupts_8h_a56a4127262477485061a29e995d349b9}} 
+\index{mLib\_Interrupts.h@{mLib\_Interrupts.h}!timer\_init@{timer\_init}}
+\index{timer\_init@{timer\_init}!mLib\_Interrupts.h@{mLib\_Interrupts.h}}
+\subsubsection{\texorpdfstring{timer\_init()}{timer\_init()}}
+{\footnotesize\ttfamily void timer\+\_\+init (\begin{DoxyParamCaption}\item[{uint16\+\_\+t}]{prescaler,  }\item[{uint16\+\_\+t}]{period }\end{DoxyParamCaption})}
+
+
+
+register initialization for Timer 
+
+
+\begin{DoxyParams}{Parameters}
+{\em prescaler} & -\/ prescaler value defined in register initialization \\
+\hline
+{\em period} & -\/ desired period between interrupts \mbox{[}ms\mbox{]} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}

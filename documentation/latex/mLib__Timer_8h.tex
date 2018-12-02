@@ -1,0 +1,75 @@
+\hypertarget{mLib__Timer_8h}{}\section{D\+E\+L\+\_\+m\+Lib\+\_\+\+Timer/m\+Lib\+\_\+\+Timer.h File Reference}
+\label{mLib__Timer_8h}\index{DEL\_mLib\_Timer/mLib\_Timer.h@{DEL\_mLib\_Timer/mLib\_Timer.h}}
+
+
+timer handle  
+
+
+{\ttfamily \#include $<$util/delay.\+h$>$}\newline
+{\ttfamily \#include $<$avr/interrupt.\+h$>$}\newline
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{mLib__Timer_8h_a43bafb28b29491ec7f871319b5a3b2f8}\label{mLib__Timer_8h_a43bafb28b29491ec7f871319b5a3b2f8}} 
+\#define {\bfseries F\+\_\+\+C\+PU}~8000000\+UL
+\item 
+\mbox{\Hypertarget{mLib__Timer_8h_ab7004d6c468b3f5c61d3198ac54c83eb}\label{mLib__Timer_8h_ab7004d6c468b3f5c61d3198ac54c83eb}} 
+\#define {\bfseries T\+I\+M1\+\_\+\+P\+SC}~1024
+\item 
+\mbox{\Hypertarget{mLib__Timer_8h_a9f4001eda335952aed1289d4909d9a33}\label{mLib__Timer_8h_a9f4001eda335952aed1289d4909d9a33}} 
+\#define {\bfseries T\+I\+M1\+\_\+\+P\+ER}~1000
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{mLib__Timer_8h_aad8c05f5391ab8440660f297373ba5de}{delay\+\_\+ms}} (unsigned int period)
+\begin{DoxyCompactList}\small\item\em delay workaround for high period values \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{mLib__Timer_8h_a7b8ab79df77b57475a5494f5f81c3bd9}{timer\+\_\+init}} (void)
+\begin{DoxyCompactList}\small\item\em register initialization for Timer \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+timer handle 
+
+\begin{DoxyAuthor}{Author}
+Maciej Mielcarski 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+01.\+12.\+2018 \begin{DoxyVerb}    tested on: Atmega328p
+\end{DoxyVerb}
+ 
+\end{DoxyDate}
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{mLib__Timer_8h_aad8c05f5391ab8440660f297373ba5de}\label{mLib__Timer_8h_aad8c05f5391ab8440660f297373ba5de}} 
+\index{mLib\_Timer.h@{mLib\_Timer.h}!delay\_ms@{delay\_ms}}
+\index{delay\_ms@{delay\_ms}!mLib\_Timer.h@{mLib\_Timer.h}}
+\subsubsection{\texorpdfstring{delay\_ms()}{delay\_ms()}}
+{\footnotesize\ttfamily void delay\+\_\+ms (\begin{DoxyParamCaption}\item[{unsigned int}]{period }\end{DoxyParamCaption})}
+
+
+
+delay workaround for high period values 
+
+
+\begin{DoxyParams}{Parameters}
+{\em period} & -\/ delay period in cpu ticks \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
+\mbox{\Hypertarget{mLib__Timer_8h_a7b8ab79df77b57475a5494f5f81c3bd9}\label{mLib__Timer_8h_a7b8ab79df77b57475a5494f5f81c3bd9}} 
+\index{mLib\_Timer.h@{mLib\_Timer.h}!timer\_init@{timer\_init}}
+\index{timer\_init@{timer\_init}!mLib\_Timer.h@{mLib\_Timer.h}}
+\subsubsection{\texorpdfstring{timer\_init()}{timer\_init()}}
+{\footnotesize\ttfamily void timer\+\_\+init (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+
+
+register initialization for Timer 
+
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}

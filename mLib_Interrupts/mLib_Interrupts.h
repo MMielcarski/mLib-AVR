@@ -3,6 +3,7 @@
 \author Maciej Mielcarski
 \date 02.12.2018
 \brief external and timer interrupts handle
+
 tested on atmega328p
 */
 

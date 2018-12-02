@@ -1,0 +1,103 @@
+\hypertarget{mLib__IO_8h}{}\section{m\+Lib\+\_\+\+I\+O/m\+Lib\+\_\+\+IO.h File Reference}
+\label{mLib__IO_8h}\index{mLib\_IO/mLib\_IO.h@{mLib\_IO/mLib\_IO.h}}
+
+
+pin input / output handle  
+
+
+{\ttfamily \#include $<$avr/io.\+h$>$}\newline
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{mLib__IO_8h_a43bafb28b29491ec7f871319b5a3b2f8}\label{mLib__IO_8h_a43bafb28b29491ec7f871319b5a3b2f8}} 
+\#define {\bfseries F\+\_\+\+C\+PU}~16000000\+UL
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+unsigned int \mbox{\hyperlink{mLib__IO_8h_a175d63a8e8e9164fc9083fcc4347ae70}{is\+\_\+pin}} (uint8\+\_\+t pin, volatile uint8\+\_\+t $\ast$pin\+\_\+pin)
+\item 
+void \mbox{\hyperlink{mLib__IO_8h_a4464f6955df8afae5ac5ae13da1b5aeb}{pin\+\_\+init}} (uint8\+\_\+t pin, volatile uint8\+\_\+t $\ast$pin\+\_\+ddr, volatile uint8\+\_\+t $\ast$pin\+\_\+port, unsigned int b\+\_\+in\+\_\+or\+\_\+out, unsigned int b\+\_\+def\+\_\+state\+\_\+or\+\_\+pullup)
+\begin{DoxyCompactList}\small\item\em pin registers initialization \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{mLib__IO_8h_ae6e770ad893eaaa62d16a9b824da4a36}{pin\+\_\+set\+\_\+state}} (uint8\+\_\+t pin, volatile uint8\+\_\+t $\ast$pin\+\_\+port, volatile uint8\+\_\+t $\ast$pin\+\_\+pin, unsigned int mode)
+\begin{DoxyCompactList}\small\item\em change pin state \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+pin input / output handle 
+
+\begin{DoxyAuthor}{Author}
+Maciej Mielcarski 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+02.\+12.\+2018 tested on atmega328p 
+\end{DoxyDate}
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{mLib__IO_8h_a175d63a8e8e9164fc9083fcc4347ae70}\label{mLib__IO_8h_a175d63a8e8e9164fc9083fcc4347ae70}} 
+\index{mLib\_IO.h@{mLib\_IO.h}!is\_pin@{is\_pin}}
+\index{is\_pin@{is\_pin}!mLib\_IO.h@{mLib\_IO.h}}
+\subsubsection{\texorpdfstring{is\_pin()}{is\_pin()}}
+{\footnotesize\ttfamily unsigned int is\+\_\+pin (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{pin,  }\item[{volatile uint8\+\_\+t $\ast$}]{pin\+\_\+pin }\end{DoxyParamCaption})}
+
+\textbackslash{}breif pin state check 
+\begin{DoxyParams}{Parameters}
+{\em pin} & -\/ pin number \\
+\hline
+{\em $\ast$pin\+\_\+pin} & -\/ pointer to P\+IN pin register, pass with reference \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+boolean -\/ 1 if pin is set, 0 if pin is reset
+\end{DoxyReturn}
+\textbackslash{}breif pin state check \mbox{\Hypertarget{mLib__IO_8h_a4464f6955df8afae5ac5ae13da1b5aeb}\label{mLib__IO_8h_a4464f6955df8afae5ac5ae13da1b5aeb}} 
+\index{mLib\_IO.h@{mLib\_IO.h}!pin\_init@{pin\_init}}
+\index{pin\_init@{pin\_init}!mLib\_IO.h@{mLib\_IO.h}}
+\subsubsection{\texorpdfstring{pin\_init()}{pin\_init()}}
+{\footnotesize\ttfamily void pin\+\_\+init (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{pin,  }\item[{volatile uint8\+\_\+t $\ast$}]{pin\+\_\+ddr,  }\item[{volatile uint8\+\_\+t $\ast$}]{pin\+\_\+port,  }\item[{unsigned int}]{b\+\_\+in\+\_\+or\+\_\+out,  }\item[{unsigned int}]{b\+\_\+def\+\_\+state\+\_\+or\+\_\+pullup }\end{DoxyParamCaption})}
+
+
+
+pin registers initialization 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pin} & -\/ pin number \\
+\hline
+{\em $\ast$pin\+\_\+ddr} & -\/ pointer to D\+DR pin register, pass with reference \\
+\hline
+{\em $\ast$pin\+\_\+port} & -\/ pointer to P\+O\+RT pin register, pass with reference \\
+\hline
+{\em b\+\_\+in\+\_\+or\+\_\+out} & -\/ boolean, set 1 to declare as output, 0 to declare as input \\
+\hline
+{\em b\+\_\+def\+\_\+state\+\_\+or\+\_\+pullup} & -\/ boolean, set 1 to set default value as 1 or enable pullup, set 0 to def. value as 0 or disable pullup \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}
+\mbox{\Hypertarget{mLib__IO_8h_ae6e770ad893eaaa62d16a9b824da4a36}\label{mLib__IO_8h_ae6e770ad893eaaa62d16a9b824da4a36}} 
+\index{mLib\_IO.h@{mLib\_IO.h}!pin\_set\_state@{pin\_set\_state}}
+\index{pin\_set\_state@{pin\_set\_state}!mLib\_IO.h@{mLib\_IO.h}}
+\subsubsection{\texorpdfstring{pin\_set\_state()}{pin\_set\_state()}}
+{\footnotesize\ttfamily void pin\+\_\+set\+\_\+state (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{pin,  }\item[{volatile uint8\+\_\+t $\ast$}]{pin\+\_\+port,  }\item[{volatile uint8\+\_\+t $\ast$}]{pin\+\_\+pin,  }\item[{unsigned int}]{mode }\end{DoxyParamCaption})}
+
+
+
+change pin state 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pin} & -\/ pin number \\
+\hline
+{\em $\ast$pin\+\_\+port} & -\/ pointer to P\+O\+RT pin register, pass with reference \\
+\hline
+{\em $\ast$pin\+\_\+pin} & -\/ pointer to P\+IN pin register, pass with reference \\
+\hline
+{\em mode} & -\/ state change mode, 0-\/reset, 1-\/set, 2-\/toggle \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void 
+\end{DoxyReturn}

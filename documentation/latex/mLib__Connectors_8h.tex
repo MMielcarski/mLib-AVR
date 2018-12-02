@@ -1,0 +1,46 @@
+\hypertarget{mLib__Connectors_8h}{}\section{D\+E\+L\+\_\+m\+Lib\+\_\+\+Connectors/m\+Lib\+\_\+\+Connectors.h File Reference}
+\label{mLib__Connectors_8h}\index{DEL\_mLib\_Connectors/mLib\_Connectors.h@{DEL\_mLib\_Connectors/mLib\_Connectors.h}}
+
+
+pin input / output handle tested on atmega328p  
+
+
+{\ttfamily \#include $<$avr/io.\+h$>$}\newline
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{mLib__Connectors_8h_a43bafb28b29491ec7f871319b5a3b2f8}\label{mLib__Connectors_8h_a43bafb28b29491ec7f871319b5a3b2f8}} 
+\#define {\bfseries F\+\_\+\+C\+PU}~16000000\+UL
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+unsigned int \mbox{\hyperlink{mLib__Connectors_8h_a175d63a8e8e9164fc9083fcc4347ae70}{is\+\_\+pin}} (uint8\+\_\+t pin, volatile uint8\+\_\+t $\ast$pin\+\_\+pin)
+\item 
+\mbox{\Hypertarget{mLib__Connectors_8h_a4464f6955df8afae5ac5ae13da1b5aeb}\label{mLib__Connectors_8h_a4464f6955df8afae5ac5ae13da1b5aeb}} 
+void {\bfseries pin\+\_\+init} (uint8\+\_\+t pin, volatile uint8\+\_\+t $\ast$pin\+\_\+ddr, volatile uint8\+\_\+t $\ast$pin\+\_\+port, unsigned int b\+\_\+in\+\_\+or\+\_\+out, unsigned int b\+\_\+def\+\_\+state\+\_\+or\+\_\+pullup)
+\item 
+\mbox{\Hypertarget{mLib__Connectors_8h_ae6e770ad893eaaa62d16a9b824da4a36}\label{mLib__Connectors_8h_ae6e770ad893eaaa62d16a9b824da4a36}} 
+void {\bfseries pin\+\_\+set\+\_\+state} (uint8\+\_\+t pin, volatile uint8\+\_\+t $\ast$pin\+\_\+port, volatile uint8\+\_\+t $\ast$pin\+\_\+pin, unsigned int mode)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+pin input / output handle tested on atmega328p 
+
+\begin{DoxyAuthor}{Author}
+Maciej Mielcarski 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+02.\+12.\+2018 
+\end{DoxyDate}
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{mLib__Connectors_8h_a175d63a8e8e9164fc9083fcc4347ae70}\label{mLib__Connectors_8h_a175d63a8e8e9164fc9083fcc4347ae70}} 
+\index{mLib\_Connectors.h@{mLib\_Connectors.h}!is\_pin@{is\_pin}}
+\index{is\_pin@{is\_pin}!mLib\_Connectors.h@{mLib\_Connectors.h}}
+\subsubsection{\texorpdfstring{is\_pin()}{is\_pin()}}
+{\footnotesize\ttfamily unsigned int is\+\_\+pin (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{pin,  }\item[{volatile uint8\+\_\+t $\ast$}]{pin\+\_\+pin }\end{DoxyParamCaption})}
+
+\textbackslash{}breif pin state check 
